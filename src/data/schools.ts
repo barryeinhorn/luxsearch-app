@@ -39,7 +39,7 @@ export const SCHOOLS: School[] = [
   },
   {
     id: 'european_school_1',
-    name: 'European School Luxembourg I',
+    name: 'European School I (Kirchberg)',
     shortName: 'ES Lux I',
     address: '23 Boulevard Konrad Adenauer, L-2950 Luxembourg',
     commune: 'Kirchberg',
@@ -51,7 +51,7 @@ export const SCHOOLS: School[] = [
   },
   {
     id: 'european_school_2',
-    name: 'European School Luxembourg II',
+    name: 'European School II (Bertrange)',
     shortName: 'ES Lux II',
     address: '1 Rue Simone Veil, L-2536 Bertrange',
     commune: 'Bertrange',

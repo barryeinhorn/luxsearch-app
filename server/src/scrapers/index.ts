@@ -117,10 +117,14 @@ export async function fetchListings(params: SearchParams) {
   const rawProperties = results.flatMap(r => r.items);
   const properties = deduplicateProperties(rawProperties);
 
-  const sources: SourceStatus[] = results.map(r => ({
-    name: r.source,
-    status: r.items.length > 0 ? 'ok' : r.status === 'blocked' ? 'degraded' : 'failed',
-  }));
+  const sources: SourceStatus[] = results.map(r => {
+    let st: SourceStatus['status'];
+    if (r.items.length > 0) st = 'ok';
+    else if (r.status === 'blocked' || r.status === 'playwright') st = 'blocked';
+    else if (r.status === 'ok') st = 'empty';
+    else st = 'failed';
+    return { name: r.source, status: st };
+  });
 
   if (properties.length === 0) {
     console.log('[scrapers] All scrapers returned 0 — using mock data');

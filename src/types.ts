@@ -1,6 +1,7 @@
 export type SourceStatus = {
   name: string;
-  status: 'ok' | 'degraded' | 'failed';
+  status: 'ok' | 'blocked' | 'empty' | 'failed';
+  error?: string;
 };
 
 export type PropertyFeatures = {
@@ -85,7 +86,7 @@ export type Filters = {
   maxPrice: number;
   minArea: number;
   communes: string[];
-  selectedSchoolId: string;
+  selectedSchoolIds: string[];
   radius: number;
   garage: boolean;
   furnished: boolean;
@@ -101,7 +102,7 @@ export const DEFAULT_FILTERS: Filters = {
   maxPrice: 8000,
   minArea: 0,
   communes: [],
-  selectedSchoolId: '',
+  selectedSchoolIds: [],
   radius: 2,
   garage: false,
   furnished: false,

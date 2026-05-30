@@ -1,6 +1,7 @@
 export type SourceStatus = {
   name: string;
-  status: 'ok' | 'degraded' | 'failed';
+  status: 'ok' | 'blocked' | 'empty' | 'failed';
+  error?: string;
 };
 
 export type PropertyFeatures = {

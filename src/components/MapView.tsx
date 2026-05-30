@@ -31,21 +31,24 @@ function formatTooltipPrice(property: Property): string {
   return `${(total / 1000).toFixed(1)}k EUR/mo`;
 }
 
-type SchoolCircle = {
+export type SchoolCircle = {
+  id: string;
   lat: number;
   lng: number;
   radius: number;
   name: string;
+  color: string;
 };
 
 type MapViewProps = {
   properties: Property[];
-  schoolCircle?: SchoolCircle | null;
+  schoolCircles?: SchoolCircle[];
 };
 
-export function MapView({ properties, schoolCircle }: MapViewProps) {
-  const center: [number, number] = schoolCircle
-    ? [schoolCircle.lat, schoolCircle.lng]
+export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
+  const primarySchool = schoolCircles[0];
+  const center: [number, number] = primarySchool
+    ? [primarySchool.lat, primarySchool.lng]
     : [49.611, 6.13];
 
   const schoolIcon = useMemo(
@@ -66,25 +69,24 @@ export function MapView({ properties, schoolCircle }: MapViewProps) {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {/* School radius circle + marker */}
-      {schoolCircle && (
-        <>
-          <Circle
-            center={[schoolCircle.lat, schoolCircle.lng]}
-            radius={schoolCircle.radius}
-            pathOptions={{
-              color: '#3b82f6',
-              fillColor: '#3b82f6',
-              fillOpacity: 0.05,
-              dashArray: '8 4',
-              weight: 2,
-            }}
-          />
-          <Marker position={[schoolCircle.lat, schoolCircle.lng]} icon={schoolIcon}>
-            <Tooltip>{schoolCircle.name}</Tooltip>
-          </Marker>
-        </>
-      )}
+      {/* School radius circles + markers (one per selected school, each with its own color) */}
+      {schoolCircles.flatMap((circle) => [
+        <Circle
+          key={`circle-${circle.id}`}
+          center={[circle.lat, circle.lng]}
+          radius={circle.radius}
+          pathOptions={{
+            color: circle.color,
+            fillColor: circle.color,
+            fillOpacity: 0.06,
+            dashArray: '8 4',
+            weight: 2,
+          }}
+        />,
+        <Marker key={`marker-${circle.id}`} position={[circle.lat, circle.lng]} icon={schoolIcon}>
+          <Tooltip>{circle.name}</Tooltip>
+        </Marker>,
+      ])}
 
       {/* Property markers */}
       {properties.map((property) => {

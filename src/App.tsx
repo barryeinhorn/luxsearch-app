@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Home, RefreshCw } from 'lucide-react';
-import { SearchPanel } from './components/SearchPanel';
-import { MapView } from './components/MapView';
+import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
+import { MapView, type SchoolCircle } from './components/MapView';
 import { PropertyCard } from './components/PropertyCard';
 import { MarketInsights } from './components/MarketInsights';
 import { SCHOOLS } from './data/schools';
-import { getSourceMeta } from './constants/sources';
 import { API_URL } from './lib/api';
 import type { Filters, Property, SourceStatus } from './types';
 import { DEFAULT_FILTERS } from './types';
@@ -85,12 +84,14 @@ export default function App() {
       if (total > filters.maxPrice) return false;
       if (p.area < filters.minArea) return false;
       if (filters.communes.length > 0 && !filters.communes.includes(p.commune)) return false;
-      if (filters.selectedSchoolId) {
-        const school = SCHOOLS.find((s) => s.id === filters.selectedSchoolId);
-        if (school) {
-          const dist = haversineKm(p.lat, p.lng, school.lat, school.lng);
-          if (dist > filters.radius) return false;
-        }
+      const selectedSchoolIds = filters.selectedSchoolIds || [];
+      if (selectedSchoolIds.length > 0) {
+        const isWithinAny = selectedSchoolIds.some((schoolId) => {
+          const school = SCHOOLS.find((s) => s.id === schoolId);
+          if (!school) return false;
+          return haversineKm(p.lat, p.lng, school.lat, school.lng) <= filters.radius;
+        });
+        if (!isWithinAny) return false;
       }
       if (filters.garage && !p.features?.garage) return false;
       if (filters.furnished && !p.features?.furnished) return false;
@@ -101,12 +102,17 @@ export default function App() {
     });
   }, [rawProperties, filters]);
 
-  const schoolCircle = useMemo(() => {
-    if (!filters.selectedSchoolId) return null;
-    const school = SCHOOLS.find((s) => s.id === filters.selectedSchoolId);
-    if (!school) return null;
-    return { lat: school.lat, lng: school.lng, radius: filters.radius * 1000, name: school.name };
-  }, [filters.selectedSchoolId, filters.radius]);
+  const schoolCircles = useMemo(() => {
+    const selectedSchoolIds = filters.selectedSchoolIds || [];
+    if (selectedSchoolIds.length === 0) return [];
+    return selectedSchoolIds
+      .map((id, idx) => {
+        const school = SCHOOLS.find((s) => s.id === id);
+        if (!school) return null;
+        return { id, lat: school.lat, lng: school.lng, radius: filters.radius * 1000, name: school.name, color: SCHOOL_COLORS[idx % SCHOOL_COLORS.length] };
+      })
+      .filter((c): c is SchoolCircle => c !== null);
+  }, [filters.selectedSchoolIds, filters.radius]);
 
   const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
   const totalSources = sourcesStatus.length;
@@ -124,23 +130,15 @@ export default function App() {
 
         <div className="flex-1 text-center hidden sm:block">
           <span className="text-sm text-slate-500">
-            {loading ? 'Loading…' : `${filteredProperties.length} listings from ${okSources.length} sources`}
+            {loading ? 'Loading…' : `${filteredProperties.length} listings from ${okSources.length} of ${totalSources} sources`}
           </span>
         </div>
 
         <div className="flex items-center gap-3 ml-auto">
           {/* Source health dots with tooltip */}
-          <div className="hidden sm:flex items-center gap-1.5" title={`${okSources.length}/${totalSources} sources active`}>
-            {sourcesStatus.slice(0, 8).map((s) => (
-              <div
-                key={s.name}
-                title={`${getSourceMeta(s.name).label}: ${s.status}`}
-                className={`w-2 h-2 rounded-full ${s.status === 'ok' ? 'bg-green-500' : s.status === 'degraded' ? 'bg-amber-500' : 'bg-red-400'}`}
-              />
-            ))}
-            {sourcesStatus.length > 8 && (
-              <span className="text-xs text-slate-400">+{sourcesStatus.length - 8}</span>
-            )}
+          <div className="hidden sm:flex items-center gap-2" title={`${okSources.length}/${totalSources} sources active`}>
+            <div className={`w-2.5 h-2.5 rounded-full ${okSources.length >= 3 ? 'bg-green-500' : okSources.length >= 1 ? 'bg-amber-500' : 'bg-red-500'}`} />
+            <span className="text-sm font-medium text-slate-600">{okSources.length} active / {totalSources} total</span>
           </div>
 
           <button
@@ -159,6 +157,8 @@ export default function App() {
           filters={filters}
           onFiltersChange={setFilters}
           properties={filteredProperties}
+          rawProperties={rawProperties}
+          sourcesStatus={sourcesStatus}
           onSearch={loadListings}
         />
 
@@ -202,7 +202,7 @@ export default function App() {
 
           {/* Map */}
           <div className="flex-1 min-h-0 relative">
-            <MapView properties={filteredProperties} schoolCircle={schoolCircle} />
+            <MapView properties={filteredProperties} schoolCircles={schoolCircles} />
             {error && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 px-6 text-center">
                 <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

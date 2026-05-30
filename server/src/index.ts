@@ -6,6 +6,12 @@ import { marketData } from './data/marketData.js';
 import { hashParams, getCachedProperties, cacheProperties } from './utils/cache.js';
 import type { SearchParams } from './types.js';
 
+// Prevent immotop from being scraped (DataDome protection)
+const immotopIdx = SCRAPER_REGISTRY.findIndex(s => s.id === 'immotop');
+if (immotopIdx > -1) {
+  SCRAPER_REGISTRY.splice(immotopIdx, 1);
+}
+
 const app = express();
 
 app.use(cors({
@@ -42,7 +48,15 @@ app.get('/api/search', async (req, res) => {
     const cached = await getCachedProperties(hash);
     if (cached && cached.length > 0) {
       console.log(`[search] Cache hit: ${cached.length} properties`);
-      return res.json({ properties: cached, sources: [], isMock: false, cachedAt: new Date().toISOString() });
+      const activeIds = new Set<string>(cached.map((p: { source: string }) => p.source));
+      const cachedSources = [
+        ...SCRAPER_REGISTRY.map(s => ({
+          name: s.id,
+          status: (activeIds.has(s.id) ? 'ok' : 'empty') as 'ok' | 'empty',
+        })),
+        { name: 'immotop', status: 'blocked' as const, error: 'DataDome blocked. Requires a real browser.' },
+      ];
+      return res.json({ properties: cached, sources: cachedSources, isMock: false });
     }
 
     // Run all scrapers
@@ -53,6 +67,11 @@ app.get('/api/search', async (req, res) => {
       cacheProperties(result.properties, hash).catch(err =>
         console.warn('[search] cache write failed:', err)
       );
+    }
+
+    // Inject immotop as permanently blocked for the UI
+    if (!result.sources.find(s => s.name === 'immotop')) {
+      result.sources.push({ name: 'immotop', status: 'blocked', error: 'DataDome blocked. Requires a real browser.' });
     }
 
     res.json(result);
