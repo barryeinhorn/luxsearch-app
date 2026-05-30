@@ -13,7 +13,10 @@ export const SOURCE_META: Record<string, SourceMeta> = {
   immotop:       { label: 'Immotop',     bg: 'bg-purple-100',  text: 'text-purple-700',  category: 'portal',  url: 'https://www.immotop.lu' },
   vivi:          { label: 'Vivi',        bg: 'bg-teal-100',    text: 'text-teal-700',    category: 'portal',  url: 'https://www.vivi.lu' },
   properstar:    { label: 'Properstar',  bg: 'bg-cyan-100',    text: 'text-cyan-700',    category: 'portal',  url: 'https://www.properstar.com' },
-  remax:         { label: 'RE/MAX',      bg: 'bg-red-100',     text: 'text-red-700',     category: 'network', url: 'https://www.remax.lu' },
+  immodirekt:    { label: 'Immodirekt', bg: 'bg-orange-100',  text: 'text-orange-700',  category: 'portal',  url: 'https://www.immodirekt.lu' },
+  luxresidence:  { label: 'LuxRes.',    bg: 'bg-blue-100',    text: 'text-blue-800',    category: 'portal',  url: 'https://www.luxresidence.lu' },
+  atisimmo:      { label: 'Atis',       bg: 'bg-teal-100',    text: 'text-teal-800',    category: 'agency',  url: 'https://www.atisimmo.lu' },
+  remax:         { label: 'RE/MAX',     bg: 'bg-red-100',     text: 'text-red-700',     category: 'network', url: 'https://www.remax.lu' },
   engelvoelkers: { label: 'E&V',         bg: 'bg-yellow-100',  text: 'text-yellow-700',  category: 'network', url: 'https://www.engelvoelkers.com' },
   kw:            { label: 'KW',          bg: 'bg-red-100',     text: 'text-red-800',     category: 'network', url: 'https://www.kwluxembourg.com' },
   barnes:        { label: 'BARNES',      bg: 'bg-slate-100',   text: 'text-slate-700',   category: 'network', url: 'https://www.barnes-luxembourg.com' },
@@ -37,12 +40,10 @@ export function getSourceMeta(source: string): SourceMeta {
   return SOURCE_META[source] ?? FALLBACK;
 }
 
-// Only includes the 17 scrapers that have actual server-side implementations.
-// remax, newimmo, beckimmo remain in SOURCE_META for badge display but are not scraped.
 export const CATEGORY_SOURCES: Record<SourceCategory, string[]> = {
-  portal:  ['athome', 'immotop', 'vivi', 'properstar'],
-  network: ['engelvoelkers', 'kw', 'barnes'],
-  agency:  ['lagence', 'fortimmo', 'homein', 'residence', 'fischbach', 'movein', 'castel', 'rollinger', 'meiermm', 'kloe'],
+  portal:  ['athome', 'immotop', 'vivi', 'properstar', 'immodirekt', 'luxresidence'],
+  network: ['engelvoelkers', 'kw', 'barnes', 'remax'],
+  agency:  ['atisimmo', 'newimmo', 'beckimmo', 'lagence', 'fortimmo', 'homein', 'residence', 'fischbach', 'movein', 'castel', 'rollinger', 'meiermm', 'kloe'],
 };
 
 export const ALL_SOURCES = Object.keys(SOURCE_META);

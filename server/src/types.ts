@@ -50,9 +50,9 @@ export type Property = {
 export type ScraperCategory = 'portal' | 'network' | 'agency';
 
 export type SourceName =
-  | 'athome' | 'immotop' | 'vivi' | 'properstar'
+  | 'athome' | 'immotop' | 'vivi' | 'properstar' | 'immodirekt' | 'luxresidence'
   | 'remax' | 'engelvoelkers' | 'kw' | 'barnes'
-  | 'newimmo' | 'beckimmo' | 'lagence' | 'fortimmo'
+  | 'atisimmo' | 'newimmo' | 'beckimmo' | 'lagence' | 'fortimmo'
   | 'homein' | 'residence' | 'fischbach' | 'movein'
   | 'castel' | 'rollinger' | 'meiermm' | 'kloe'
   | 'other';

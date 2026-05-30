@@ -6,6 +6,12 @@ import { scrapeProperstar } from './properstar.js';
 import { scrapeEngelVoelkers } from './engelvoelkers.js';
 import { scrapeKellerWilliams } from './kw.js';
 import { scrapeBarnes } from './barnes.js';
+import { scrapeRemax } from './remax.js';
+import { scrapeNewimmo } from './newimmo.js';
+import { scrapeBeckimmo } from './beckimmo.js';
+import { scrapeImmodirekt } from './immodirekt.js';
+import { scrapeLuxresidence } from './luxresidence.js';
+import { scrapeAtisimmo } from './atisimmo.js';
 import { scrapeLagence } from './lagence.js';
 import { scrapeFortimmo } from './fortimmo.js';
 import { scrapeHomein } from './homein.js';
@@ -25,11 +31,17 @@ export const SCRAPER_REGISTRY: ScraperDefinition[] = [
   { id: 'immotop',      name: 'Immotop.lu',         category: 'portal',  baseUrl: 'https://www.immotop.lu',        fn: immotopSearch },
   { id: 'vivi',         name: 'Vivi.lu',            category: 'portal',  baseUrl: 'https://www.vivi.lu',           fn: viviSearch },
   { id: 'properstar',   name: 'Properstar',         category: 'portal',  baseUrl: 'https://www.properstar.com',    fn: scrapeProperstar },
+  { id: 'immodirekt',   name: 'Immodirekt.lu',      category: 'portal',  baseUrl: 'https://www.immodirekt.lu',     fn: scrapeImmodirekt },
+  { id: 'luxresidence', name: 'LuxResidence',       category: 'portal',  baseUrl: 'https://www.luxresidence.lu',   fn: scrapeLuxresidence },
   // Large networks
   { id: 'engelvoelkers',name: 'Engel & Völkers',    category: 'network', baseUrl: 'https://www.engelvoelkers.com', fn: scrapeEngelVoelkers },
   { id: 'kw',           name: 'Keller Williams',    category: 'network', baseUrl: 'https://www.kwluxembourg.com',  fn: scrapeKellerWilliams },
   { id: 'barnes',       name: 'BARNES Luxembourg',  category: 'network', baseUrl: 'https://www.barnes-luxembourg.com', fn: scrapeBarnes },
+  { id: 'remax',        name: 'RE/MAX Luxembourg',  category: 'network', baseUrl: 'https://www.remax.lu',          fn: scrapeRemax },
   // Local agencies
+  { id: 'atisimmo',     name: 'Atis Immo',          category: 'agency',  baseUrl: 'https://www.atisimmo.lu',       fn: scrapeAtisimmo },
+  { id: 'newimmo',      name: 'New Immo',           category: 'agency',  baseUrl: 'https://www.newimmo.lu',        fn: scrapeNewimmo },
+  { id: 'beckimmo',     name: 'Beck Immo',          category: 'agency',  baseUrl: 'https://www.beckimmo.lu',       fn: scrapeBeckimmo },
   { id: 'lagence',      name: "L'Agence",           category: 'agency',  baseUrl: 'https://www.lagence.lu',        fn: scrapeLagence },
   { id: 'fortimmo',     name: 'Forte Immobilier',   category: 'agency',  baseUrl: 'https://www.fortimmo.lu',       fn: scrapeFortimmo },
   { id: 'homein',       name: 'Home-In',            category: 'agency',  baseUrl: 'https://www.homein.lu',         fn: scrapeHomein },

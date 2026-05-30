@@ -169,15 +169,14 @@ export default function App() {
     const txPath = filters.transaction === 'rent' ? 'rent' : 'buy';
     const communeSlug = commune0 ?? 'luxembourg';
 
-    const candidates: { id: string; label: string; url: string }[] = [
-      { id: 'immotop',    label: 'Immotop',    url: qs ? `${immotopBase}?${qs}` : immotopBase },
+    const candidates: { id: string; label: string; url: string; alwaysShow?: boolean }[] = [
+      { id: 'immotop',    label: 'Immotop',    url: qs ? `${immotopBase}?${qs}` : immotopBase, alwaysShow: true },
       { id: 'properstar', label: 'Properstar', url: `https://www.properstar.com/luxembourg/${communeSlug}-loc/${txPath}/apartment-house/apartment` },
       { id: 'athome',     label: 'atHome',     url: 'https://www.athome.lu' },
       { id: 'vivi',       label: 'Vivi',       url: commune0 ? `https://www.vivi.lu/en/${txPath}/apartment/${commune0}` : `https://www.vivi.lu/en/${txPath}/apartment/` },
-      { id: 'beckimmo',   label: 'Beckimmo',   url: 'https://www.beckimmo.lu' },
     ];
 
-    return candidates.filter(c => (counts[c.id] ?? 0) === 0 || statusMap[c.id] === 'blocked');
+    return candidates.filter(c => c.alwaysShow || (counts[c.id] ?? 0) === 0 || statusMap[c.id] === 'blocked');
   }, [rawProperties, sourcesStatus, filters.transaction, filters.communes, filters.bedrooms, filters.maxPrice]);
 
   return (
