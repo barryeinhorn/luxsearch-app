@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: luxsearch-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true

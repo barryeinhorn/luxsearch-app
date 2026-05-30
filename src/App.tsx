@@ -1,0 +1,247 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Home, RefreshCw } from 'lucide-react';
+import { SearchPanel } from './components/SearchPanel';
+import { MapView } from './components/MapView';
+import { PropertyCard } from './components/PropertyCard';
+import { MarketInsights } from './components/MarketInsights';
+import { SCHOOLS } from './data/schools';
+import { getSourceMeta } from './constants/sources';
+import { API_URL } from './lib/api';
+import type { Filters, Property, SourceStatus } from './types';
+import { DEFAULT_FILTERS } from './types';
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function useLastRefreshed() {
+  const [lastRefreshed, setLastRefreshed] = useState<Date | null>(null);
+  const [elapsed, setElapsed] = useState('');
+
+  useEffect(() => {
+    if (!lastRefreshed) return;
+    const interval = setInterval(() => {
+      const secs = Math.round((Date.now() - lastRefreshed.getTime()) / 1000);
+      if (secs < 60) setElapsed(`${secs}s ago`);
+      else setElapsed(`${Math.floor(secs / 60)} min ago`);
+    }, 10000);
+    const secs = Math.round((Date.now() - lastRefreshed.getTime()) / 1000);
+    setElapsed(secs < 60 ? `${secs}s ago` : `${Math.floor(secs / 60)} min ago`);
+    return () => clearInterval(interval);
+  }, [lastRefreshed]);
+
+  return { setLastRefreshed, elapsed };
+}
+
+export default function App() {
+  const [rawProperties, setRawProperties] = useState<Property[]>([]);
+  const [sourcesStatus, setSourcesStatus] = useState<SourceStatus[]>([]);
+  const [isMock, setIsMock] = useState(false);
+  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [showInsights, setShowInsights] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { setLastRefreshed, elapsed } = useLastRefreshed();
+
+  const loadListings = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/search`);
+      if (!res.ok) throw new Error(`Search failed: ${res.status}`);
+      const { properties, sources, isMock: mock } = (await res.json()) as {
+        properties: Property[];
+        sources: SourceStatus[];
+        isMock: boolean;
+      };
+      setRawProperties(properties);
+      setSourcesStatus(sources);
+      setIsMock(mock);
+      setLastRefreshed(new Date());
+    } catch {
+      setError('Unable to load properties. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [setLastRefreshed]);
+
+  useEffect(() => {
+    loadListings();
+  }, [loadListings]);
+
+  const filteredProperties = useMemo(() => {
+    return rawProperties.filter((p) => {
+      if (p.transaction && p.transaction !== filters.transaction) return false;
+      if (filters.propertyType !== 'all' && p.type && p.type !== filters.propertyType) return false;
+      const bedroomMin = filters.bedrooms === 'any' ? 0 : parseInt(filters.bedrooms);
+      if (p.bedrooms < bedroomMin) return false;
+      const total = p.totalMonthly ?? p.price + p.charges;
+      if (total > filters.maxPrice) return false;
+      if (p.area < filters.minArea) return false;
+      if (filters.communes.length > 0 && !filters.communes.includes(p.commune)) return false;
+      if (filters.selectedSchoolId) {
+        const school = SCHOOLS.find((s) => s.id === filters.selectedSchoolId);
+        if (school) {
+          const dist = haversineKm(p.lat, p.lng, school.lat, school.lng);
+          if (dist > filters.radius) return false;
+        }
+      }
+      if (filters.garage && !p.features?.garage) return false;
+      if (filters.furnished && !p.features?.furnished) return false;
+      if (filters.balcony && !p.features?.balcony) return false;
+      if (filters.evCharger && !p.features?.evCharger) return false;
+      if (filters.selectedSources.length > 0 && !filters.selectedSources.includes(p.source)) return false;
+      return true;
+    });
+  }, [rawProperties, filters]);
+
+  const schoolCircle = useMemo(() => {
+    if (!filters.selectedSchoolId) return null;
+    const school = SCHOOLS.find((s) => s.id === filters.selectedSchoolId);
+    if (!school) return null;
+    return { lat: school.lat, lng: school.lng, radius: filters.radius * 1000, name: school.name };
+  }, [filters.selectedSchoolId, filters.radius]);
+
+  const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
+  const totalSources = sourcesStatus.length;
+
+  return (
+    <div className="h-screen bg-slate-50 font-sans overflow-hidden flex flex-col">
+
+      {/* ── Fixed Header ── */}
+      <header className="h-14 shrink-0 bg-white border-b border-slate-200 z-50 flex items-center px-4 gap-3">
+        <div className="flex items-center gap-2 shrink-0">
+          <Home size={20} className="text-red-500" />
+          <span className="font-semibold text-slate-900">LuxSearch</span>
+          <span className="text-xs text-slate-400 hidden sm:inline">Luxembourg</span>
+        </div>
+
+        <div className="flex-1 text-center hidden sm:block">
+          <span className="text-sm text-slate-500">
+            {loading ? 'Loading…' : `${filteredProperties.length} listings from ${okSources.length} sources`}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 ml-auto">
+          {/* Source health dots with tooltip */}
+          <div className="hidden sm:flex items-center gap-1.5" title={`${okSources.length}/${totalSources} sources active`}>
+            {sourcesStatus.slice(0, 8).map((s) => (
+              <div
+                key={s.name}
+                title={`${getSourceMeta(s.name).label}: ${s.status}`}
+                className={`w-2 h-2 rounded-full ${s.status === 'ok' ? 'bg-green-500' : s.status === 'degraded' ? 'bg-amber-500' : 'bg-red-400'}`}
+              />
+            ))}
+            {sourcesStatus.length > 8 && (
+              <span className="text-xs text-slate-400">+{sourcesStatus.length - 8}</span>
+            )}
+          </div>
+
+          <button
+            onClick={() => setShowInsights(!showInsights)}
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 border border-slate-200 rounded-lg px-3 py-1.5 hover:bg-slate-50 transition-colors"
+          >
+            Market insights
+          </button>
+        </div>
+      </header>
+
+      {/* ── Below header: sidebar + main ── */}
+      <div className="flex-1 flex overflow-hidden">
+
+        <SearchPanel
+          filters={filters}
+          onFiltersChange={setFilters}
+          properties={filteredProperties}
+          onSearch={loadListings}
+        />
+
+        {/* Main content */}
+        <main className="flex-1 flex flex-col overflow-hidden">
+
+          {/* isMock banner */}
+          {isMock && (
+            <div className="bg-amber-50 border-b border-amber-200 py-2 px-4 text-sm text-amber-700 text-center shrink-0">
+              Showing preview data — live scraping loading in background
+            </div>
+          )}
+
+          {/* Stats bar */}
+          <div className="shrink-0 bg-white border-b border-slate-100 px-4 py-2 flex items-center gap-4 text-xs text-slate-500">
+            <span>
+              <span className="font-semibold text-slate-700">{filteredProperties.length}</span> listings
+            </span>
+            <span>·</span>
+            <span>
+              <span className="font-semibold text-slate-700">{okSources.length}</span> of {totalSources} sources
+            </span>
+            {elapsed && (
+              <>
+                <span>·</span>
+                <span>Last refreshed {elapsed}</span>
+              </>
+            )}
+            <button
+              onClick={async () => {
+                await fetch(`${API_URL}/api/cache`, { method: 'DELETE' });
+                loadListings();
+              }}
+              disabled={loading}
+              className="ml-auto flex items-center gap-1 text-xs text-slate-500 hover:text-slate-800 disabled:opacity-40 transition-colors"
+            >
+              <RefreshCw size={11} className={loading ? 'animate-spin' : ''} />
+              Refresh
+            </button>
+          </div>
+
+          {/* Map */}
+          <div className="flex-1 min-h-0 relative">
+            <MapView properties={filteredProperties} schoolCircle={schoolCircle} />
+            {error && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 px-6 text-center">
+                <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <p className="font-semibold text-slate-900">Could not load listings</p>
+                  <p className="mt-2 text-sm text-slate-600">{error}</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Property card strip */}
+          <div className="shrink-0 border-t border-slate-100 bg-white" style={{ height: 220 }}>
+            <div className="flex gap-3 px-3 py-3 h-full overflow-x-auto overflow-y-hidden">
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="w-[200px] flex-shrink-0 rounded-xl border border-slate-100 bg-slate-50 animate-pulse" />
+                ))
+              ) : filteredProperties.length > 0 ? (
+                filteredProperties.map((p) => <PropertyCard key={p.id} property={p} />)
+              ) : (
+                <div className="flex items-center text-sm text-slate-500 px-2">
+                  No listings match your current filters.
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Market Insights slide-out */}
+      <div
+        className={`fixed inset-y-0 right-0 z-40 w-full max-w-md bg-white border-l border-slate-200 shadow-2xl transform transition-transform duration-300 ${
+          showInsights ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="h-full pt-14">
+          <MarketInsights onClose={() => setShowInsights(false)} />
+        </div>
+      </div>
+    </div>
+  );
+}
