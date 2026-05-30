@@ -134,6 +134,8 @@ export default function App() {
           name: school.name,
           shortName: school.shortName,
           color: schoolColorMap[id] ?? '#3b82f6',
+          commune: school.commune,
+          cost: school.cost,
           curriculum: school.curriculum,
           feeRange: school.feeRange,
           ageRange: school.ageRange,
@@ -211,7 +213,10 @@ export default function App() {
       </header>
 
       {/* ── Below header: sidebar + main ── */}
-      <div className="flex-1 flex overflow-hidden">
+      <div
+        className="flex-1 flex overflow-hidden"
+        style={{ paddingRight: showInsights ? 400 : 0, transition: 'padding-right 0.3s ease' }}
+      >
 
         <SearchPanel
           filters={filters}

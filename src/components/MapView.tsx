@@ -30,9 +30,20 @@ function formatTooltipPrice(property: Property): string {
   return `${(total / 1000).toFixed(1)}k EUR/mo`;
 }
 
+function costBadgeStyle(cost: 'free' | 'subsidised' | 'paid'): { background: string; color: string } {
+  if (cost === 'free') return { background: '#dcfce7', color: '#15803d' };
+  if (cost === 'subsidised') return { background: '#dbeafe', color: '#1d4ed8' };
+  return { background: '#f3e8ff', color: '#7e22ce' };
+}
+function costLabel(cost: 'free' | 'subsidised' | 'paid'): string {
+  if (cost === 'free') return 'Free';
+  if (cost === 'subsidised') return 'Sub.';
+  return 'Paid';
+}
+
 function makeSchoolIcon(shortName: string, color: string): L.DivIcon {
   return L.divIcon({
-    html: `<div style="background:white;border:2px solid ${color};border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.2);color:#1e293b;font-family:Inter,sans-serif;">🎓 ${shortName}</div>`,
+    html: `<div class="lux-school-badge" style="background:white;border:2px solid ${color};border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.2);color:#1e293b;font-family:Inter,sans-serif;">🎓 ${shortName}</div>`,
     className: '',
     iconSize: undefined,
     iconAnchor: [0, 0],
@@ -47,6 +58,8 @@ export type SchoolCircle = {
   name: string;
   shortName: string;
   color: string;
+  commune: string;
+  cost: 'free' | 'subsidised' | 'paid';
   curriculum: string;
   feeRange: string | undefined;
   ageRange: string;
@@ -89,25 +102,39 @@ export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
               }}
             />,
             <Marker key={`marker-${circle.id}`} position={[circle.lat, circle.lng]} icon={icon}>
-              <Tooltip>
-                <div style={{ fontSize: 12, minWidth: 160, lineHeight: 1.6 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 2 }}>{circle.name}</div>
-                  {circle.curriculum && <div>Curriculum: {circle.curriculum}</div>}
-                  {circle.feeRange && <div>Cost: {circle.feeRange}</div>}
-                  {circle.ageRange && <div>Ages: {circle.ageRange}</div>}
-                  {circle.website && (
-                    <a
-                      href={circle.website}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ color: '#3b82f6', textDecoration: 'underline' }}
-                    >
-                      Visit website ↗
-                    </a>
+              <Popup>
+                <div style={{ padding: '12px 14px', minWidth: 220, fontSize: 12, lineHeight: 1.6, color: '#0f172a' }}>
+                  <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{circle.name}</div>
+                  <div style={{ marginBottom: 3 }}>
+                    <span style={{ color: '#64748b' }}>Curriculum: </span>{circle.curriculum}
+                  </div>
+                  <div style={{ marginBottom: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ color: '#64748b' }}>Cost: </span>
+                    <span style={{ padding: '1px 7px', borderRadius: 9999, fontSize: 11, fontWeight: 500, ...costBadgeStyle(circle.cost) }}>
+                      {costLabel(circle.cost)}
+                    </span>
+                  </div>
+                  {circle.feeRange && (
+                    <div style={{ marginBottom: 3 }}>
+                      <span style={{ color: '#64748b' }}>Fees: </span>{circle.feeRange}
+                    </div>
                   )}
+                  <div style={{ marginBottom: 3 }}>
+                    <span style={{ color: '#64748b' }}>Ages: </span>{circle.ageRange}
+                  </div>
+                  <div style={{ marginBottom: 6 }}>
+                    <span style={{ color: '#64748b' }}>Commune: </span>{circle.commune}
+                  </div>
+                  <a
+                    href={circle.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: '#3b82f6', textDecoration: 'underline' }}
+                  >
+                    Visit website ↗
+                  </a>
                 </div>
-              </Tooltip>
+              </Popup>
             </Marker>,
           ];
         })}
@@ -119,7 +146,7 @@ export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
             <CircleMarker
               key={property.id}
               center={[property.lat, property.lng]}
-              radius={18}
+              radius={10}
               pathOptions={{
                 fillColor: color,
                 fillOpacity: 0.85,
