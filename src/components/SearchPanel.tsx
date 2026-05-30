@@ -24,29 +24,25 @@ const ALL_COMMUNES = [
 
 function getSchoolTypeBadge(type: School['type']): string {
   switch (type) {
-    case 'primary':
-    case 'secondary': return 'bg-blue-100 text-blue-700';
-    case 'international':
-    case 'private': return 'bg-purple-100 text-purple-700';
-    case 'european': return 'bg-green-100 text-green-700';
+    case 'public_international': return 'bg-green-100 text-green-800';
+    case 'european': return 'bg-blue-100 text-blue-800';
+    case 'private_international': return 'bg-purple-100 text-purple-800';
   }
 }
 
 function getSchoolTypeLabel(type: School['type']): string {
   switch (type) {
-    case 'primary': return 'Primary';
-    case 'secondary': return 'Secondary';
-    case 'international':
-    case 'private': return 'Intl';
+    case 'public_international': return 'Public';
     case 'european': return 'EU';
+    case 'private_international': return 'Private';
   }
 }
 
 function getCostBadgeClass(cost: School['cost']): string {
   switch (cost) {
-    case 'free': return 'bg-green-100 text-green-700';
-    case 'subsidised': return 'bg-blue-100 text-blue-700';
-    case 'paid': return 'bg-purple-100 text-purple-700';
+    case 'free': return 'bg-green-50 text-green-700 border border-green-200';
+    case 'subsidised': return 'bg-blue-50 text-blue-700 border border-blue-200';
+    case 'paid': return 'bg-purple-50 text-purple-700 border border-purple-200';
   }
 }
 
@@ -77,6 +73,12 @@ function getSourceDotTitle(id: string, status: SourceStatus | undefined, count: 
 
 const LABEL = 'text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2';
 const PILL_INACTIVE = 'bg-white border border-slate-200 text-slate-600 rounded-full px-3 py-1 text-sm cursor-pointer select-none hover:bg-slate-50';
+
+const COST_ACTIVE: Record<string, string> = {
+  free: 'bg-green-600 text-white border-green-600',
+  subsidised: 'bg-blue-600 text-white border-blue-600',
+  paid: 'bg-purple-600 text-white border-purple-600',
+};
 
 const CATEGORY_LABELS: Record<SourceCategory, string> = {
   portal: 'Portals',
@@ -125,16 +127,20 @@ export function SearchPanel({
     onFiltersChange({ ...filters, ...partial });
   }
 
-  function handleCostFilterChange(cost: 'all' | 'free' | 'subsidised' | 'paid') {
-    const validIds = SCHOOLS.filter(s => cost === 'all' || s.cost === cost).map(s => s.id);
+  function toggleCostFilter(cost: string) {
+    const current = filters.schoolCostFilter;
+    const next = current.includes(cost) ? current.filter(c => c !== cost) : [...current, cost];
+    const validIds = SCHOOLS
+      .filter(s => next.length === 0 || next.includes(s.cost))
+      .map(s => s.id);
     set({
-      schoolCostFilter: cost,
+      schoolCostFilter: next,
       selectedSchoolIds: selectedSchoolIds.filter(id => validIds.includes(id)),
     });
   }
 
   const schoolsForDropdown = SCHOOLS.filter(
-    s => filters.schoolCostFilter === 'all' || s.cost === filters.schoolCostFilter,
+    s => filters.schoolCostFilter.length === 0 || filters.schoolCostFilter.includes(s.cost),
   );
 
   function isCategorySelected(cat: SourceCategory): boolean {
@@ -315,30 +321,26 @@ export function SearchPanel({
         <div className="flex-1 border-t border-slate-200" />
       </div>
 
-      {/* 7. School cost filter */}
+      {/* 7. School cost filter — multi-select, no "All" pill */}
       <div>
         <p className={LABEL}>School cost</p>
         <div className="flex flex-wrap gap-2">
-          {([
-            { value: 'all',        label: 'All',  activeClass: 'bg-slate-900 text-white' },
-            { value: 'free',       label: 'Free', activeClass: 'bg-green-600 text-white' },
-            { value: 'subsidised', label: 'Sub.', activeClass: 'bg-blue-600 text-white' },
-            { value: 'paid',       label: 'Paid', activeClass: 'bg-purple-600 text-white' },
-          ] as { value: 'all' | 'free' | 'subsidised' | 'paid'; label: string; activeClass: string }[]).map(
-            ({ value, label, activeClass }) => (
+          {(['free', 'subsidised', 'paid'] as const).map((cost) => {
+            const isActive = filters.schoolCostFilter.includes(cost);
+            return (
               <span
-                key={value}
+                key={cost}
                 className={
-                  filters.schoolCostFilter === value
-                    ? `${activeClass} rounded-full px-3 py-1 text-sm cursor-pointer select-none`
+                  isActive
+                    ? `border rounded-full px-3 py-1 text-sm cursor-pointer select-none ${COST_ACTIVE[cost]}`
                     : PILL_INACTIVE
                 }
-                onClick={() => handleCostFilterChange(value)}
+                onClick={() => toggleCostFilter(cost)}
               >
-                {label}
+                {cost === 'free' ? 'Free' : cost === 'subsidised' ? 'Subsidised' : 'Paid'}
               </span>
-            ),
-          )}
+            );
+          })}
         </div>
       </div>
 
@@ -356,7 +358,7 @@ export function SearchPanel({
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: schoolColorMap[selectedSchoolIds[0]] ?? '#3b82f6' }} />
-                <span className="text-slate-900 text-sm truncate">{firstSelectedSchool.shortName}</span>
+                <span className="text-slate-900 text-sm">{firstSelectedSchool.shortName}</span>
               </span>
             ) : (
               <span className="flex items-center gap-1.5">
@@ -370,7 +372,7 @@ export function SearchPanel({
             <ChevronDown size={14} className="text-slate-400 shrink-0 ml-2" />
           </button>
           {schoolOpen && (
-            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+            <div className="absolute z-50 top-full left-0 min-w-[340px] mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-y-auto max-h-72">
               {schoolsForDropdown.map((school) => {
                 const isSelected = selectedSchoolIds.includes(school.id);
                 const color = schoolColorMap[school.id];
@@ -390,7 +392,7 @@ export function SearchPanel({
                     {isSelected && color
                       ? <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
                       : <div className="w-2 h-2 shrink-0" />}
-                    <span className="font-medium text-sm text-slate-900 flex-1 truncate">{school.shortName}</span>
+                    <span className="font-medium text-sm text-slate-900 flex-1">{school.shortName}</span>
                     <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${getCostBadgeClass(school.cost)}`}>
                       {getCostLabel(school.cost)}
                     </span>
