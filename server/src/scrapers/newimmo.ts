@@ -21,6 +21,7 @@ function parseCard(el: ReturnType<any>, $: any, params: SearchParams): Property 
 
   const price = data.price ?? 0;
   if (!price || price < 100) return null;
+  if (params.maxTotalPrice > 0 && price > params.maxTotalPrice) return null;
 
   // Filter irrelevant types (bureaux, commerces, garages, terrains)
   const types = data.type ?? [];

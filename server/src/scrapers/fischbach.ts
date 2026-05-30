@@ -7,7 +7,8 @@ const BASE_URL = 'https://fischbach.lu';
 
 function buildUrl(params: SearchParams): string {
   const tx = params.transaction === 'sale' ? 'vente' : 'location';
-  return `${BASE_URL}/biens/${tx}/all/all/0/0/`;
+  const priceMax = params.maxTotalPrice > 0 ? params.maxTotalPrice : 0;
+  return `${BASE_URL}/biens/${tx}/all/all/0/${priceMax}/`;
 }
 
 export async function scrapeFischbach(params: SearchParams): Promise<Property[]> {
@@ -33,6 +34,7 @@ export async function scrapeFischbach(params: SearchParams): Promise<Property[]>
     const priceText = el.find('.prix').first().text().trim();
     const price = parsePrice(priceText);
     if (!price || price < 100) continue;
+    if (params.maxTotalPrice > 0 && price > params.maxTotalPrice) continue;
 
     const commune = el.find('h1').first().text().trim() || 'Luxembourg';
     const detailsText = el.find('.details').last().text();

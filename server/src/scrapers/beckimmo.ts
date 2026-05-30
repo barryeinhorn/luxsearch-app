@@ -27,6 +27,9 @@ export async function scrapeBeckimmo(params: SearchParams): Promise<Property[]> 
     results = $ ? extractCardsFromPage($, SOURCE, BASE_URL) : [];
   }
 
-  console.log(`[${SOURCE}] ${results.length} listings`);
-  return results;
+  const filtered = params.maxTotalPrice > 0
+    ? results.filter(p => p.price <= params.maxTotalPrice)
+    : results;
+  console.log(`[${SOURCE}] ${filtered.length} listings`);
+  return filtered;
 }

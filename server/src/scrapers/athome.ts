@@ -76,6 +76,10 @@ function buildBody(params: SearchParams, page = 1): object {
     filters['bedrooms'] = { gte: params.minBedrooms };
   }
 
+  if (params.maxTotalPrice > 0) {
+    filters['price'] = { lte: params.maxTotalPrice };
+  }
+
   return {
     apireq: {
       site: 'lu_at_home',

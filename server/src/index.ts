@@ -6,11 +6,6 @@ import { marketData } from './data/marketData.js';
 import { hashParams, getCachedProperties, cacheProperties } from './utils/cache.js';
 import type { SearchParams } from './types.js';
 
-// Prevent immotop from being scraped (DataDome protection)
-const immotopIdx = SCRAPER_REGISTRY.findIndex(s => s.id === 'immotop');
-if (immotopIdx > -1) {
-  SCRAPER_REGISTRY.splice(immotopIdx, 1);
-}
 
 const app = express();
 
@@ -36,6 +31,7 @@ app.get('/api/search', async (req, res) => {
   const params: SearchParams = {
     transaction: (req.query.transaction as string) === 'sale' ? 'sale' : 'rent',
     minBedrooms: Number(req.query.minBedrooms ?? '0'),
+    maxTotalPrice: Number(req.query.maxTotalPrice ?? '0'),
     communes: req.query.communes ? String(req.query.communes).split(',') : [],
     propertyType: (['apartment', 'house', 'studio'].includes(String(req.query.propertyType))
       ? req.query.propertyType as 'apartment' | 'house' | 'studio'
@@ -49,13 +45,10 @@ app.get('/api/search', async (req, res) => {
     if (cached && cached.length > 0) {
       console.log(`[search] Cache hit: ${cached.length} properties`);
       const activeIds = new Set<string>(cached.map((p: { source: string }) => p.source));
-      const cachedSources = [
-        ...SCRAPER_REGISTRY.map(s => ({
-          name: s.id,
-          status: (activeIds.has(s.id) ? 'ok' : 'empty') as 'ok' | 'empty',
-        })),
-        { name: 'immotop', status: 'blocked' as const, error: 'DataDome blocked. Requires a real browser.' },
-      ];
+      const cachedSources = SCRAPER_REGISTRY.map(s => ({
+        name: s.id,
+        status: (activeIds.has(s.id) ? 'ok' : 'empty') as 'ok' | 'empty',
+      }));
       return res.json({ properties: cached, sources: cachedSources, isMock: false });
     }
 
@@ -67,11 +60,6 @@ app.get('/api/search', async (req, res) => {
       cacheProperties(result.properties, hash).catch(err =>
         console.warn('[search] cache write failed:', err)
       );
-    }
-
-    // Inject immotop as permanently blocked for the UI
-    if (!result.sources.find(s => s.name === 'immotop')) {
-      result.sources.push({ name: 'immotop', status: 'blocked', error: 'DataDome blocked. Requires a real browser.' });
     }
 
     res.json(result);
@@ -90,7 +78,7 @@ app.get('/api/debug/scraper/:name', async (req, res) => {
     return res.status(404).json({ error: `Scraper '${name}' not found. Available: ${available}` });
   }
 
-  const params: SearchParams = { transaction: 'rent', minBedrooms: 0, communes: [], propertyType: 'all' };
+  const params: SearchParams = { transaction: 'rent', minBedrooms: 0, maxTotalPrice: 0, communes: [], propertyType: 'all' };
   const start = Date.now();
   let htmlSnippet = '';
   let resultCount = 0;
@@ -131,7 +119,7 @@ app.get('/api/debug/scraper/:name', async (req, res) => {
 
 // Debug: run all scrapers and return summary table
 app.get('/api/debug/all', async (_req, res) => {
-  const params: SearchParams = { transaction: 'rent', minBedrooms: 0, communes: [], propertyType: 'all' };
+  const params: SearchParams = { transaction: 'rent', minBedrooms: 0, maxTotalPrice: 0, communes: [], propertyType: 'all' };
   const results = await runAllScrapers(params);
 
   const totalRaw = results.reduce((s, r) => s + r.items.length, 0);

@@ -48,11 +48,19 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const { setLastRefreshed, elapsed } = useLastRefreshed();
 
-  const loadListings = useCallback(async () => {
+  const doFetch = useCallback(async (currentFilters: Filters) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${API_URL}/api/search`);
+      const minBedrooms = currentFilters.bedrooms === 'any' ? 0 : parseInt(currentFilters.bedrooms);
+      const qs = new URLSearchParams({ transaction: currentFilters.transaction });
+      if (minBedrooms > 0) qs.set('minBedrooms', String(minBedrooms));
+      // maxPrice < 8000 means the user explicitly set a budget; 8000 is the slider max = no limit
+      if (currentFilters.maxPrice < 8000) qs.set('maxTotalPrice', String(currentFilters.maxPrice));
+      if (currentFilters.propertyType !== 'all') qs.set('propertyType', currentFilters.propertyType);
+      if (currentFilters.communes.length > 0) qs.set('communes', currentFilters.communes.join(','));
+
+      const res = await fetch(`${API_URL}/api/search?${qs}`);
       if (!res.ok) throw new Error(`Search failed: ${res.status}`);
       const { properties, sources, isMock: mock } = (await res.json()) as {
         properties: Property[];
@@ -70,9 +78,13 @@ export default function App() {
     }
   }, [setLastRefreshed]);
 
+  const loadListings = useCallback(() => doFetch(filters), [doFetch, filters]);
+
+  // Run once on mount with default filters; re-run only when user clicks Search
   useEffect(() => {
-    loadListings();
-  }, [loadListings]);
+    doFetch(DEFAULT_FILTERS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredProperties = useMemo(() => {
     return rawProperties.filter((p) => {

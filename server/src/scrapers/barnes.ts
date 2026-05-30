@@ -39,6 +39,7 @@ export async function scrapeBarnes(params: SearchParams): Promise<Property[]> {
       const priceText = el.find('h6.title, .title').first().text().trim();
       const price = parsePrice(priceText);
       if (!price || price < 100) continue;
+      if (params.maxTotalPrice > 0 && price > params.maxTotalPrice) continue;
 
       const image = el.find('img').first().attr('data-src') || el.find('img').first().attr('src') || '';
       const bedroomMatch = title.match(/(\d+)\s*chambre/i);

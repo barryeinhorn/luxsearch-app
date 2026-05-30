@@ -58,16 +58,16 @@ type ViviResponse = {
 
 function buildBody(params: SearchParams, typeCode: number): URLSearchParams {
   const body = new URLSearchParams();
-  body.set('limit', '20');
+  body.set('limit', '50');
   body.set('page', '1');
   body.set('transaction', String(TX_MAP[params.transaction] ?? 11));
   body.set('type', String(typeCode));
   body.set('locationType', 'city');
-  body.set('locationValue', 'Luxembourg');
+  body.set('locationValue', params.communes[0] ?? 'Luxembourg');
   body.set('locationReference', String(LU_REFERENCE));
   body.set('sorting', 'dateDESC');
-  body.set('bedroom_min', String(params.minBedrooms > 0 ? params.minBedrooms : 0));
-  body.set('bedroom_max', '0');
+  if (params.minBedrooms > 0) body.set('bedroom_min', String(params.minBedrooms));
+  if (params.maxTotalPrice > 0) body.set('price_max', String(params.maxTotalPrice));
   return body;
 }
 

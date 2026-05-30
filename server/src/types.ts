@@ -60,6 +60,7 @@ export type SourceName =
 export type SearchParams = {
   transaction: 'rent' | 'sale';
   minBedrooms: number;
+  maxTotalPrice: number;  // 0 = no limit
   communes: string[];
   propertyType: 'all' | 'apartment' | 'house' | 'studio';
 };
