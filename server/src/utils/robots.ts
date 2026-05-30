@@ -7,7 +7,7 @@ export async function getRobotsTxt(url: string): Promise<string | null> {
     if (robotsCache.has(origin)) {
       return robotsCache.get(origin) ?? null;
     }
-    const response = await fetch(`${origin}/robots.txt`, { cache: 'force-cache' });
+    const response = await fetch(`${origin}/robots.txt`);
     if (!response.ok) {
       robotsCache.set(origin, '');
       return null;
