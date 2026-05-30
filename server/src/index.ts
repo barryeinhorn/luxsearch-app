@@ -146,10 +146,8 @@ app.get('/api/debug/all', async (_req, res) => {
 // Clear geocode cache
 app.delete('/api/cache', async (_req, res) => {
   const { writeFileSync } = await import('fs');
-  const { dirname, join } = await import('path');
-  const { fileURLToPath } = await import('url');
-  const dir = dirname(fileURLToPath(import.meta.url));
-  writeFileSync(join(dir, 'data/geocodeCache.json'), '{}');
+  const { join } = await import('path');
+  writeFileSync(join(__dirname, 'data/geocodeCache.json'), '{}');
   res.json({ ok: true, message: 'Geocode cache cleared' });
 });
 

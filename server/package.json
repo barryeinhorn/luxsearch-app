@@ -1,7 +1,6 @@
 {
   "name": "luxsearch-server",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec tsx src/index.ts",
     "build": "tsc --skipLibCheck",
@@ -9,16 +8,15 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^4.17.18",
+    "@types/node": "^20.14.1",
     "cheerio": "^1.0.0-rc.12",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
-    "tsx": "^4.22.3"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.18",
-    "@types/express": "^4.17.18",
-    "@types/node": "^20.14.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.22.3",
     "typescript": "^5.6.2"
   }
 }

@@ -1,9 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { join } from 'path';
 import { getCachedGeocode, cacheGeocode } from './cache.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const CACHE_PATH = join(__dirname, '../data/geocodeCache.json');
 
 type GeoPoint = { lat: number; lng: number };
