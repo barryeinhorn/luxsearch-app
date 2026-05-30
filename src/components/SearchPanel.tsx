@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search, ChevronDown, X, ChevronRight } from 'lucide-react';
+import { Search, ChevronDown, X, ChevronRight, ExternalLink } from 'lucide-react';
 import { SCHOOLS } from '../data/schools';
-import { SOURCE_META, CATEGORY_SOURCES, type SourceCategory } from '../constants/sources';
+import { SOURCE_META, CATEGORY_SOURCES, DIRECTORY_AGENCIES, type SourceCategory } from '../constants/sources';
 import type { Filters, Property, School, SourceStatus } from '../types';
 import { DEFAULT_FILTERS } from '../types';
 
@@ -54,16 +54,14 @@ function getCostLabel(cost: School['cost']): string {
   }
 }
 
-function getSourceDotClass(id: string, status: SourceStatus | undefined, count: number): string {
-  if (id === 'immotop') return 'bg-red-500';
+function getSourceDotClass(status: SourceStatus | undefined, count: number): string {
   if (!status) return 'bg-slate-300';
   if (status.status === 'ok' && count > 0) return 'bg-green-500';
   if (status.status === 'blocked' || status.status === 'failed') return 'bg-red-500';
   return 'bg-slate-300';
 }
 
-function getSourceDotTitle(id: string, status: SourceStatus | undefined, count: number): string {
-  if (id === 'immotop') return 'Blocked (DataDome) — requires a real browser';
+function getSourceDotTitle(status: SourceStatus | undefined, count: number): string {
   if (!status) return 'No status data';
   if (status.status === 'ok') return `Working — ${count} listing${count !== 1 ? 's' : ''}`;
   if (status.status === 'blocked') return status.error ?? 'Blocked by anti-bot protection';
@@ -475,67 +473,81 @@ export function SearchPanel({
 
         {sourcesOpen && (
           <div className="mt-3 space-y-4">
-            {(['portal', 'network', 'agency'] as SourceCategory[]).map(cat => (
-              <div key={cat}>
-                <label className="flex items-center gap-2 cursor-pointer mb-1.5">
-                  <input
-                    type="checkbox"
-                    checked={isCategorySelected(cat)}
-                    ref={el => { if (el) el.indeterminate = isCategoryPartial(cat); }}
-                    onChange={() => toggleCategory(cat)}
-                    className="rounded border-slate-300"
-                  />
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                    {CATEGORY_LABELS[cat]}
-                  </span>
-                </label>
-                <div className="space-y-1 ml-4">
-                  {CATEGORY_SOURCES[cat].map(id => {
-                    const meta = SOURCE_META[id];
-                    if (!meta) return null;
-                    const isImmotop = id === 'immotop';
-                    const statusEntry = sourcesStatus.find(s => s.name === id);
-                    const count = sourceCounts[id] || 0;
-                    const dotClass = getSourceDotClass(id, statusEntry, count);
-                    const dotTitle = getSourceDotTitle(id, statusEntry, count);
-                    const selected = !isImmotop && isSourceSelected(id);
-                    return (
-                      <div key={id} className="flex items-center gap-2 py-0.5">
-                        <div className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} title={dotTitle} />
-                        <input
-                          type="checkbox"
-                          checked={selected}
-                          disabled={isImmotop}
-                          onChange={() => !isImmotop && toggleSource(id)}
-                          className="rounded border-slate-300 disabled:opacity-30"
-                        />
-                        <a
-                          href={meta.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs text-slate-700 hover:underline truncate flex-1"
-                          title={meta.label}
-                        >
-                          {meta.label}
-                        </a>
-                        {isImmotop ? (
-                          <span
-                            className="text-[10px] text-red-500 font-medium shrink-0 cursor-help"
-                            title="Blocked by DataDome — requires a real browser. Do not attempt to scrape."
-                          >
-                            blocked
-                          </span>
-                        ) : (
-                          <span className="text-[10px] text-slate-400 shrink-0 tabular-nums">
-                            {count > 0 ? count : (statusEntry ? '—' : '')}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+            {/* Live sources — active scrapers with checkboxes */}
+            <div>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Live sources</p>
+              <div className="space-y-3">
+                {(['portal', 'network', 'agency'] as SourceCategory[]).filter(cat => CATEGORY_SOURCES[cat].length > 0).map(cat => (
+                  <div key={cat}>
+                    <label className="flex items-center gap-2 cursor-pointer mb-1.5">
+                      <input
+                        type="checkbox"
+                        checked={isCategorySelected(cat)}
+                        ref={el => { if (el) el.indeterminate = isCategoryPartial(cat); }}
+                        onChange={() => toggleCategory(cat)}
+                        className="rounded border-slate-300"
+                      />
+                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                        {CATEGORY_LABELS[cat]}
+                      </span>
+                    </label>
+                    <div className="space-y-1 ml-4">
+                      {CATEGORY_SOURCES[cat].map(id => {
+                        const meta = SOURCE_META[id];
+                        if (!meta) return null;
+                        const statusEntry = sourcesStatus.find(s => s.name === id);
+                        const count = sourceCounts[id] || 0;
+                        const dotClass = getSourceDotClass(statusEntry, count);
+                        const dotTitle = getSourceDotTitle(statusEntry, count);
+                        return (
+                          <div key={id} className="flex items-center gap-2 py-0.5">
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} title={dotTitle} />
+                            <input
+                              type="checkbox"
+                              checked={isSourceSelected(id)}
+                              onChange={() => toggleSource(id)}
+                              className="rounded border-slate-300"
+                            />
+                            <a
+                              href={meta.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-slate-700 hover:underline truncate flex-1"
+                              title={meta.label}
+                            >
+                              {meta.label}
+                            </a>
+                            <span className="text-[10px] text-slate-400 shrink-0 tabular-nums">
+                              {count > 0 ? count : (statusEntry ? '—' : '')}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Directory links — geo-blocked / JS-rendered agencies */}
+            <div>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Directory</p>
+              <div className="flex flex-wrap gap-1.5">
+                {DIRECTORY_AGENCIES.map(agency => (
+                  <a
+                    key={agency.id}
+                    href={agency.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1 text-[10px] text-slate-500 hover:text-blue-600 border border-slate-200 rounded-full px-2 py-0.5 hover:border-blue-300 transition-colors"
+                    title={agency.description}
+                  >
+                    {agency.name}
+                    <ExternalLink size={8} className="shrink-0 opacity-60" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

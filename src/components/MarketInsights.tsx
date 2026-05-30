@@ -2,11 +2,22 @@ import { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { X, ExternalLink } from 'lucide-react';
 import { API_URL } from '../lib/api';
+import { DIRECTORY_AGENCIES, type DirectoryAgencyCategory } from '../constants/sources';
 import type { MarketSnapshot } from '../types';
 
 type MarketInsightsProps = {
   onClose: () => void;
 };
+
+function getCategoryTagClass(cat: DirectoryAgencyCategory): string {
+  switch (cat) {
+    case 'Portal':  return 'bg-indigo-100 text-indigo-700';
+    case 'Luxury':  return 'bg-amber-100 text-amber-700';
+    case 'Network': return 'bg-blue-100 text-blue-700';
+    case 'City':    return 'bg-green-100 text-green-700';
+    case 'Local':   return 'bg-slate-100 text-slate-600';
+  }
+}
 
 const FB_GROUPS = [
   { name: 'Expats in Luxembourg — Housing', url: 'https://www.facebook.com/groups/expatsinluxembourghousing' },
@@ -146,6 +157,36 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
             </div>
           </>
         ) : null}
+
+        {/* Agency Directory */}
+        <div className="pt-2 border-t border-slate-100">
+          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
+            Agency directory
+          </p>
+          <p className="text-xs text-slate-500 mb-3">
+            These agencies are not available for direct search but worth visiting directly
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {DIRECTORY_AGENCIES.map(agency => (
+              <a
+                key={agency.id}
+                href={agency.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-col gap-1.5 rounded-lg border border-slate-200 p-2.5 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+              >
+                <div className="flex items-start justify-between gap-1">
+                  <span className="text-xs font-semibold text-slate-900 group-hover:text-blue-700 leading-tight">{agency.name}</span>
+                  <ExternalLink size={10} className="shrink-0 mt-0.5 opacity-30 group-hover:opacity-80 transition-opacity" />
+                </div>
+                <p className="text-[10px] text-slate-400 leading-tight">{agency.description}</p>
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full w-fit ${getCategoryTagClass(agency.category)}`}>
+                  {agency.category}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
 
         {/* Facebook groups */}
         <div className="pt-2 border-t border-slate-100">
