@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Home, RefreshCw } from 'lucide-react';
+import { ExternalLink, Home, RefreshCw } from 'lucide-react';
 import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
 import { MapView, type SchoolCircle } from './components/MapView';
 import { PropertyCard } from './components/PropertyCard';
@@ -117,6 +117,30 @@ export default function App() {
   const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
   const totalSources = sourcesStatus.length;
 
+  const deepLinks = useMemo(() => {
+    const txImmotop = filters.transaction === 'rent' ? 'location-appartements' : 'vente-appartements';
+    const commune0 = filters.communes[0]?.toLowerCase();
+    const communeImmotop = commune0 ?? 'luxembourg';
+    const immotopBase = `https://www.immotop.lu/en/${txImmotop}/${communeImmotop}/`;
+    const immotopParams = new URLSearchParams();
+    const minBedrooms = filters.bedrooms === 'any' ? 0 : parseInt(filters.bedrooms);
+    if (minBedrooms > 0) immotopParams.set('nb_rooms_min', String(minBedrooms));
+    if (filters.maxPrice < 8000) immotopParams.set('price_max', String(filters.maxPrice));
+    const immotopQs = immotopParams.toString();
+    const immotop = immotopQs ? `${immotopBase}?${immotopQs}` : immotopBase;
+
+    const txPropstar = filters.transaction === 'rent' ? 'rent' : 'buy';
+    const communePropstar = commune0 ?? 'luxembourg';
+    const properstar = `https://www.properstar.com/luxembourg/${communePropstar}-loc/${txPropstar}/apartment-house/apartment`;
+
+    const txVivi = filters.transaction === 'rent' ? 'rent' : 'buy';
+    const vivi = commune0
+      ? `https://www.vivi.lu/en/${txVivi}/apartment/${commune0}`
+      : `https://www.vivi.lu/en/${txVivi}/apartment/`;
+
+    return { immotop, properstar, vivi };
+  }, [filters.transaction, filters.communes, filters.bedrooms, filters.maxPrice]);
+
   return (
     <div className="h-screen bg-slate-50 font-sans overflow-hidden flex flex-col">
 
@@ -199,6 +223,31 @@ export default function App() {
               Refresh
             </button>
           </div>
+
+          {/* "Search also on" bar */}
+          {!loading && (
+            <div className="shrink-0 bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-3 flex-wrap">
+              <span className="text-xs text-slate-400 shrink-0">Also search on:</span>
+              {([
+                { label: 'Immotop',   url: deepLinks.immotop },
+                { label: 'Properstar',url: deepLinks.properstar },
+                { label: 'atHome',    url: 'https://www.athome.lu' },
+                { label: 'Vivi',      url: deepLinks.vivi },
+                { label: 'Beckimmo', url: 'https://www.beckimmo.lu' },
+              ] as { label: string; url: string }[]).map(({ label, url }) => (
+                <a
+                  key={label}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-1 border border-slate-200 rounded-full px-3 py-1 text-xs text-slate-600 hover:bg-white hover:border-slate-400 transition shrink-0"
+                >
+                  {label}
+                  <ExternalLink size={10} />
+                </a>
+              ))}
+            </div>
+          )}
 
           {/* Map */}
           <div className="flex-1 min-h-0 relative">
