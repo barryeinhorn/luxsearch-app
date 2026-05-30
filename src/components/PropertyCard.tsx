@@ -42,6 +42,11 @@ export function PropertyCard({ property }: { property: Property }) {
           <span className="text-xs rounded-full px-2 py-0.5 bg-slate-100 text-slate-600 truncate max-w-[80px]">
             {property.commune}
           </span>
+          {property.lat === 0 && property.lng === 0 && (
+            <span className="text-xs rounded-full px-2 py-0.5 bg-slate-100 text-slate-400" title="Location unknown — not shown on map">
+              📍?
+            </span>
+          )}
         </div>
         <p className="text-sm text-slate-500 mt-1">
           {property.bedrooms}br · {property.area}m²

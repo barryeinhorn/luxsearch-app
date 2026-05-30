@@ -147,6 +147,7 @@ export default function App() {
 
   const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
   const totalSources = sourcesStatus.length;
+  const onMapCount = filteredProperties.filter(p => p.lat !== 0 && p.lng !== 0).length;
 
   const deepLinkPills = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -242,6 +243,9 @@ export default function App() {
           <div className="shrink-0 bg-white border-b border-slate-100 px-4 py-2 flex items-center gap-4 text-xs text-slate-500">
             <span>
               <span className="font-semibold text-slate-700">{filteredProperties.length}</span> listings
+              {onMapCount < filteredProperties.length && (
+                <span className="text-slate-400 ml-1">({onMapCount} on map)</span>
+              )}
             </span>
             <span>·</span>
             <span>

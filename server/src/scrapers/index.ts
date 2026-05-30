@@ -112,10 +112,28 @@ function deduplicateProperties(properties: Property[]): Property[] {
   });
 }
 
+function clearPlaceholderImages(properties: Property[]): Property[] {
+  const freq = new Map<string, number>();
+  for (const p of properties) {
+    for (const img of p.images ?? []) {
+      freq.set(img, (freq.get(img) ?? 0) + 1);
+    }
+  }
+  const placeholders = new Set(
+    [...freq.entries()].filter(([, n]) => n > 2).map(([url]) => url),
+  );
+  if (placeholders.size === 0) return properties;
+  console.log(`[scrapers] clearing ${placeholders.size} placeholder image URL(s) shared across 3+ listings`);
+  return properties.map(p => ({
+    ...p,
+    images: (p.images ?? []).filter(img => !placeholders.has(img)),
+  }));
+}
+
 export async function fetchListings(params: SearchParams) {
   const results = await runAllScrapers(params);
   const rawProperties = results.flatMap(r => r.items);
-  const properties = deduplicateProperties(rawProperties);
+  const properties = clearPlaceholderImages(deduplicateProperties(rawProperties));
 
   const sources: SourceStatus[] = results.map(r => {
     let st: SourceStatus['status'];

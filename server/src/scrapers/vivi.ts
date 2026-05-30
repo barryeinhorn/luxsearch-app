@@ -77,8 +77,14 @@ function toListing(raw: ViviProperty, transaction: SearchParams['transaction']):
   const bedrooms = raw.attributes.bedroom ?? 0;
   const bathrooms = parseInt(raw.attributes.bathroom ?? '0') || 0;
   const hasParking = parseInt(raw.attributes['parking.all'] ?? '0') > 0;
-  const lat = parseFloat(raw.position.latitude) || 0;
-  const lng = parseFloat(raw.position.longitude) || 0;
+  const lat = parseFloat(raw.position?.latitude) || 0;
+  const lng = parseFloat(raw.position?.longitude) || 0;
+  const images = Array.isArray(raw.images) ? raw.images.filter(Boolean) : [];
+
+  if (!lat || !lng) {
+    console.warn(`[${SOURCE}] listing ${raw.id} has no coordinates`);
+  }
+  console.log(`[${SOURCE}] listing ${raw.id} images (${images.length}):`, images);
 
   return {
     id: generateId(SOURCE, String(raw.id)),
@@ -99,7 +105,7 @@ function toListing(raw: ViviProperty, transaction: SearchParams['transaction']):
     postalCode: '',
     lat,
     lng,
-    images: raw.images,
+    images,
     description: '',
     available: 'Contact agent',
     features: {
