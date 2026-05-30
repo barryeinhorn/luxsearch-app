@@ -84,10 +84,25 @@ export function parsePrice(text: string): number {
     .replace(/'/g, '');
   const m = clean.match(/\d[\d.,']*\d|\d/);
   if (!m) return 0;
-  const raw = m[0].replace(/[,']/g, match => (match === ',' && clean.indexOf('.') > clean.indexOf(',') ? '' : '.'));
-  return Math.round(Math.abs(parseFloat(raw.replace(/\./g, (_, i, s) => (s.lastIndexOf('.') === i ? '.' : ''))))) || 0;
+  let raw = m[0];
+  // European thousands-separator: "3.500" or "1.500.000"
+  if (/^\d{1,3}(\.\d{3})+$/.test(raw)) {
+    return parseInt(raw.replace(/\./g, ''), 10);
+  }
+  // Mixed: "3.500,00" (EU) or "3,500.00" (US)
+  const hasComma = raw.includes(',');
+  const hasDot = raw.includes('.');
+  if (hasComma && hasDot) {
+    if (raw.lastIndexOf(',') > raw.lastIndexOf('.')) {
+      raw = raw.replace(/\./g, '').replace(',', '.');
+    } else {
+      raw = raw.replace(/,/g, '');
+    }
+  } else if (hasComma) {
+    raw = /,\d{3}$/.test(raw) ? raw.replace(',', '') : raw.replace(',', '.');
+  }
+  return Math.round(Math.abs(parseFloat(raw))) || 0;
 }
-
 export function extractNumber(text: string): number {
   const m = (text ?? '').match(/\d+/);
   return m ? parseInt(m[0], 10) : 0;
