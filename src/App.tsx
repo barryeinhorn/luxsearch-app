@@ -117,29 +117,36 @@ export default function App() {
   const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
   const totalSources = sourcesStatus.length;
 
-  const deepLinks = useMemo(() => {
-    const txImmotop = filters.transaction === 'rent' ? 'location-appartements' : 'vente-appartements';
+  const deepLinkPills = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const p of rawProperties) counts[p.source] = (counts[p.source] ?? 0) + 1;
+
+    const statusMap: Record<string, SourceStatus['status']> = {};
+    for (const s of sourcesStatus) statusMap[s.name] = s.status;
+
     const commune0 = filters.communes[0]?.toLowerCase();
-    const communeImmotop = commune0 ?? 'luxembourg';
-    const immotopBase = `https://www.immotop.lu/en/${txImmotop}/${communeImmotop}/`;
+
+    const txImmotop = filters.transaction === 'rent' ? 'location-appartements' : 'vente-appartements';
+    const immotopBase = `https://www.immotop.lu/en/${txImmotop}/${commune0 ?? 'luxembourg'}/`;
     const immotopParams = new URLSearchParams();
     const minBedrooms = filters.bedrooms === 'any' ? 0 : parseInt(filters.bedrooms);
     if (minBedrooms > 0) immotopParams.set('nb_rooms_min', String(minBedrooms));
     if (filters.maxPrice < 8000) immotopParams.set('price_max', String(filters.maxPrice));
-    const immotopQs = immotopParams.toString();
-    const immotop = immotopQs ? `${immotopBase}?${immotopQs}` : immotopBase;
+    const qs = immotopParams.toString();
 
-    const txPropstar = filters.transaction === 'rent' ? 'rent' : 'buy';
-    const communePropstar = commune0 ?? 'luxembourg';
-    const properstar = `https://www.properstar.com/luxembourg/${communePropstar}-loc/${txPropstar}/apartment-house/apartment`;
+    const txPath = filters.transaction === 'rent' ? 'rent' : 'buy';
+    const communeSlug = commune0 ?? 'luxembourg';
 
-    const txVivi = filters.transaction === 'rent' ? 'rent' : 'buy';
-    const vivi = commune0
-      ? `https://www.vivi.lu/en/${txVivi}/apartment/${commune0}`
-      : `https://www.vivi.lu/en/${txVivi}/apartment/`;
+    const candidates: { id: string; label: string; url: string }[] = [
+      { id: 'immotop',    label: 'Immotop',    url: qs ? `${immotopBase}?${qs}` : immotopBase },
+      { id: 'properstar', label: 'Properstar', url: `https://www.properstar.com/luxembourg/${communeSlug}-loc/${txPath}/apartment-house/apartment` },
+      { id: 'athome',     label: 'atHome',     url: 'https://www.athome.lu' },
+      { id: 'vivi',       label: 'Vivi',       url: commune0 ? `https://www.vivi.lu/en/${txPath}/apartment/${commune0}` : `https://www.vivi.lu/en/${txPath}/apartment/` },
+      { id: 'beckimmo',   label: 'Beckimmo',   url: 'https://www.beckimmo.lu' },
+    ];
 
-    return { immotop, properstar, vivi };
-  }, [filters.transaction, filters.communes, filters.bedrooms, filters.maxPrice]);
+    return candidates.filter(c => (counts[c.id] ?? 0) === 0 || statusMap[c.id] === 'blocked');
+  }, [rawProperties, sourcesStatus, filters.transaction, filters.communes, filters.bedrooms, filters.maxPrice]);
 
   return (
     <div className="h-screen bg-slate-50 font-sans overflow-hidden flex flex-col">
@@ -224,17 +231,11 @@ export default function App() {
             </button>
           </div>
 
-          {/* "Search also on" bar */}
-          {!loading && (
+          {/* "Search also on" bar — only sources with 0 results or blocked status */}
+          {!loading && deepLinkPills.length > 0 && (
             <div className="shrink-0 bg-slate-50 border-b border-slate-200 px-4 py-2 flex items-center gap-3 flex-wrap">
               <span className="text-xs text-slate-400 shrink-0">Also search on:</span>
-              {([
-                { label: 'Immotop',   url: deepLinks.immotop },
-                { label: 'Properstar',url: deepLinks.properstar },
-                { label: 'atHome',    url: 'https://www.athome.lu' },
-                { label: 'Vivi',      url: deepLinks.vivi },
-                { label: 'Beckimmo', url: 'https://www.beckimmo.lu' },
-              ] as { label: string; url: string }[]).map(({ label, url }) => (
+              {deepLinkPills.map(({ label, url }) => (
                 <a
                   key={label}
                   href={url}
