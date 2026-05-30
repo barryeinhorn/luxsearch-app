@@ -5,7 +5,16 @@ import { SOURCE_META, CATEGORY_SOURCES, type SourceCategory } from '../constants
 import type { Filters, Property, School, SourceStatus } from '../types';
 import { DEFAULT_FILTERS } from '../types';
 
-export const SCHOOL_COLORS = ['#3b82f6', '#22c55e', '#f97316', '#a855f7', '#ef4444', '#14b8a6'];
+export const SCHOOL_COLORS = [
+  '#3b82f6', // blue
+  '#22c55e', // green
+  '#f97316', // orange
+  '#a855f7', // purple
+  '#ef4444', // red
+  '#14b8a6', // teal
+  '#eab308', // yellow
+  '#ec4899', // pink
+];
 
 const ALL_COMMUNES = [
   'Belair', 'Bonnevoie', 'Bertrange', 'Cessange', 'Gasperich', 'Gare',
@@ -15,8 +24,8 @@ const ALL_COMMUNES = [
 
 function getSchoolTypeBadge(type: School['type']): string {
   switch (type) {
-    case 'primary': return 'bg-blue-100 text-blue-700';
-    case 'secondary': return 'bg-slate-100 text-slate-700';
+    case 'primary':
+    case 'secondary': return 'bg-blue-100 text-blue-700';
     case 'international':
     case 'private': return 'bg-purple-100 text-purple-700';
     case 'european': return 'bg-green-100 text-green-700';
@@ -30,6 +39,22 @@ function getSchoolTypeLabel(type: School['type']): string {
     case 'international':
     case 'private': return 'Intl';
     case 'european': return 'EU';
+  }
+}
+
+function getCostBadgeClass(cost: School['cost']): string {
+  switch (cost) {
+    case 'free': return 'bg-green-100 text-green-700';
+    case 'subsidised': return 'bg-blue-100 text-blue-700';
+    case 'paid': return 'bg-purple-100 text-purple-700';
+  }
+}
+
+function getCostLabel(cost: School['cost']): string {
+  switch (cost) {
+    case 'free': return 'Free';
+    case 'subsidised': return 'Sub.';
+    case 'paid': return 'Paid';
   }
 }
 
@@ -51,7 +76,6 @@ function getSourceDotTitle(id: string, status: SourceStatus | undefined, count: 
 }
 
 const LABEL = 'text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2';
-const PILL_ACTIVE = 'bg-slate-900 text-white rounded-full px-3 py-1 text-sm cursor-pointer select-none';
 const PILL_INACTIVE = 'bg-white border border-slate-200 text-slate-600 rounded-full px-3 py-1 text-sm cursor-pointer select-none hover:bg-slate-50';
 
 const CATEGORY_LABELS: Record<SourceCategory, string> = {
@@ -67,9 +91,12 @@ type SearchPanelProps = {
   rawProperties: Property[];
   sourcesStatus: SourceStatus[];
   onSearch: () => void;
+  schoolColorMap: Record<string, string>;
 };
 
-export function SearchPanel({ filters, onFiltersChange, properties, rawProperties, sourcesStatus, onSearch }: SearchPanelProps) {
+export function SearchPanel({
+  filters, onFiltersChange, properties, rawProperties, sourcesStatus, onSearch, schoolColorMap,
+}: SearchPanelProps) {
   const [communeOpen, setCommuneOpen] = useState(false);
   const [communeSearch, setCommuneSearch] = useState('');
   const [schoolOpen, setSchoolOpen] = useState(false);
@@ -98,6 +125,18 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
     onFiltersChange({ ...filters, ...partial });
   }
 
+  function handleCostFilterChange(cost: 'all' | 'free' | 'subsidised' | 'paid') {
+    const validIds = SCHOOLS.filter(s => cost === 'all' || s.cost === cost).map(s => s.id);
+    set({
+      schoolCostFilter: cost,
+      selectedSchoolIds: selectedSchoolIds.filter(id => validIds.includes(id)),
+    });
+  }
+
+  const schoolsForDropdown = SCHOOLS.filter(
+    s => filters.schoolCostFilter === 'all' || s.cost === filters.schoolCostFilter,
+  );
+
   function isCategorySelected(cat: SourceCategory): boolean {
     const catSources = CATEGORY_SOURCES[cat];
     if (filters.selectedSources.length === 0) return true;
@@ -116,7 +155,6 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
     const allOtherSources = Object.entries(CATEGORY_SOURCES)
       .filter(([k]) => k !== cat)
       .flatMap(([, v]) => v);
-
     const currentlyAllSelected = isCategorySelected(cat);
     if (currentlyAllSelected && !isCategoryPartial(cat)) {
       const baseline = filters.selectedSources.length === 0
@@ -160,6 +198,10 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
     : filters.selectedSources.length;
   const activeSourceCount = sourcesStatus.filter(s => s.status === 'ok').length;
 
+  const firstSelectedSchool = selectedSchoolIds.length === 1
+    ? SCHOOLS.find(s => s.id === selectedSchoolIds[0])
+    : null;
+
   const panelContent = (
     <div className="p-4 space-y-5 overflow-y-auto h-full">
 
@@ -168,7 +210,11 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         <p className={LABEL}>Transaction</p>
         <div className="flex gap-2">
           {(['rent', 'sale'] as const).map((t) => (
-            <span key={t} className={filters.transaction === t ? PILL_ACTIVE : PILL_INACTIVE} onClick={() => set({ transaction: t })}>
+            <span key={t}
+              className={filters.transaction === t
+                ? 'bg-slate-900 text-white rounded-full px-3 py-1 text-sm cursor-pointer select-none'
+                : PILL_INACTIVE}
+              onClick={() => set({ transaction: t })}>
               {t === 'rent' ? 'Rent' : 'Sale'}
             </span>
           ))}
@@ -180,7 +226,11 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         <p className={LABEL}>Property type</p>
         <div className="flex flex-wrap gap-2">
           {(['all', 'apartment', 'house', 'studio'] as const).map((t) => (
-            <span key={t} className={filters.propertyType === t ? PILL_ACTIVE : PILL_INACTIVE} onClick={() => set({ propertyType: t })}>
+            <span key={t}
+              className={filters.propertyType === t
+                ? 'bg-slate-900 text-white rounded-full px-3 py-1 text-sm cursor-pointer select-none'
+                : PILL_INACTIVE}
+              onClick={() => set({ propertyType: t })}>
               {t === 'all' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
             </span>
           ))}
@@ -192,7 +242,11 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         <p className={LABEL}>Bedrooms</p>
         <div className="flex flex-wrap gap-2">
           {(['any', '1+', '2+', '3+', '4+'] as const).map((b) => (
-            <span key={b} className={filters.bedrooms === b ? PILL_ACTIVE : PILL_INACTIVE} onClick={() => set({ bedrooms: b })}>
+            <span key={b}
+              className={filters.bedrooms === b
+                ? 'bg-slate-900 text-white rounded-full px-3 py-1 text-sm cursor-pointer select-none'
+                : PILL_INACTIVE}
+              onClick={() => set({ bedrooms: b })}>
               {b === 'any' ? 'Any' : b}
             </span>
           ))}
@@ -261,7 +315,34 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         <div className="flex-1 border-t border-slate-200" />
       </div>
 
-      {/* 7. School multi-select dropdown */}
+      {/* 7. School cost filter */}
+      <div>
+        <p className={LABEL}>School cost</p>
+        <div className="flex flex-wrap gap-2">
+          {([
+            { value: 'all',        label: 'All',  activeClass: 'bg-slate-900 text-white' },
+            { value: 'free',       label: 'Free', activeClass: 'bg-green-600 text-white' },
+            { value: 'subsidised', label: 'Sub.', activeClass: 'bg-blue-600 text-white' },
+            { value: 'paid',       label: 'Paid', activeClass: 'bg-purple-600 text-white' },
+          ] as { value: 'all' | 'free' | 'subsidised' | 'paid'; label: string; activeClass: string }[]).map(
+            ({ value, label, activeClass }) => (
+              <span
+                key={value}
+                className={
+                  filters.schoolCostFilter === value
+                    ? `${activeClass} rounded-full px-3 py-1 text-sm cursor-pointer select-none`
+                    : PILL_INACTIVE
+                }
+                onClick={() => handleCostFilterChange(value)}
+              >
+                {label}
+              </span>
+            ),
+          )}
+        </div>
+      </div>
+
+      {/* 8. School multi-select dropdown */}
       <div>
         <p className={LABEL}>School</p>
         <div className="relative" ref={schoolRef}>
@@ -269,43 +350,54 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
             className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-left flex items-center justify-between focus:outline-none"
             onClick={() => setSchoolOpen(!schoolOpen)}
           >
-            {selectedSchoolIds.length > 0 ? (
+            {selectedSchoolIds.length === 0 ? (
+              <span className="text-slate-400">No school selected</span>
+            ) : selectedSchoolIds.length === 1 && firstSelectedSchool ? (
               <span className="flex items-center gap-1.5">
-                {selectedSchoolIds.map((id, idx) => (
-                  <span key={id} className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: SCHOOL_COLORS[idx % SCHOOL_COLORS.length] }} />
-                ))}
-                <span className="text-slate-900 text-sm">
-                  {selectedSchoolIds.length} school{selectedSchoolIds.length !== 1 ? 's' : ''}
-                </span>
+                <span className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: schoolColorMap[selectedSchoolIds[0]] ?? '#3b82f6' }} />
+                <span className="text-slate-900 text-sm truncate">{firstSelectedSchool.shortName}</span>
               </span>
             ) : (
-              <span className="text-slate-400">No school selected</span>
+              <span className="flex items-center gap-1.5">
+                {selectedSchoolIds.map(id => (
+                  <span key={id} className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ backgroundColor: schoolColorMap[id] ?? '#3b82f6' }} />
+                ))}
+                <span className="text-slate-900 text-sm">{selectedSchoolIds.length} schools selected</span>
+              </span>
             )}
             <ChevronDown size={14} className="text-slate-400 shrink-0 ml-2" />
           </button>
           {schoolOpen && (
-            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden max-h-64 overflow-y-auto">
-              {SCHOOLS.map((school) => {
+            <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden max-h-72 overflow-y-auto">
+              {schoolsForDropdown.map((school) => {
                 const isSelected = selectedSchoolIds.includes(school.id);
-                const selectedIndex = selectedSchoolIds.indexOf(school.id);
-                const color = selectedIndex >= 0 ? SCHOOL_COLORS[selectedIndex % SCHOOL_COLORS.length] : undefined;
+                const color = schoolColorMap[school.id];
                 return (
-                  <label key={school.id} className="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={isSelected}
+                  <label key={school.id} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
                       onChange={() => {
                         const next = isSelected
                           ? selectedSchoolIds.filter(id => id !== school.id)
                           : [...selectedSchoolIds, school.id];
                         set({ selectedSchoolIds: next });
                       }}
-                      className="rounded border-slate-300" />
-                    {color
+                      className="rounded border-slate-300 shrink-0"
+                    />
+                    {isSelected && color
                       ? <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
                       : <div className="w-2 h-2 shrink-0" />}
-                    <span className="text-slate-900 truncate flex-1">{school.name}</span>
+                    <span className="font-medium text-sm text-slate-900 flex-1 truncate">{school.shortName}</span>
+                    <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${getCostBadgeClass(school.cost)}`}>
+                      {getCostLabel(school.cost)}
+                    </span>
                     <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${getSchoolTypeBadge(school.type)}`}>
                       {getSchoolTypeLabel(school.type)}
                     </span>
+                    <span className="text-xs text-slate-400 shrink-0">{school.commune}</span>
                   </label>
                 );
               })}
@@ -314,11 +406,11 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         </div>
       </div>
 
-      {/* 8. Radius slider (only when school(s) selected) */}
+      {/* 9. Radius slider (only when school(s) selected) */}
       {selectedSchoolIds.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className={LABEL} style={{ marginBottom: 0 }}>Radius</p>
+            <p className={LABEL} style={{ marginBottom: 0 }}>Radius for all schools</p>
             <span className="font-semibold text-slate-900 text-sm">{filters.radius.toFixed(1)} km</span>
           </div>
           <input type="range" min={0.5} max={10} step={0.5} value={filters.radius}
@@ -334,7 +426,7 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
         <div className="flex-1 border-t border-slate-200" />
       </div>
 
-      {/* 9. Feature checkboxes */}
+      {/* 10. Feature checkboxes */}
       <div>
         <div className="grid grid-cols-2 gap-2">
           {(
@@ -405,7 +497,6 @@ export function SearchPanel({ filters, onFiltersChange, properties, rawPropertie
                     const dotClass = getSourceDotClass(id, statusEntry, count);
                     const dotTitle = getSourceDotTitle(id, statusEntry, count);
                     const selected = !isImmotop && isSourceSelected(id);
-
                     return (
                       <div key={id} className="flex items-center gap-2 py-0.5">
                         <div className={`w-2 h-2 rounded-full shrink-0 ${dotClass}`} title={dotTitle} />

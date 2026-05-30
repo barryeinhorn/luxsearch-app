@@ -75,8 +75,14 @@ export type School = {
   lat: number;
   lng: number;
   type: 'primary' | 'secondary' | 'international' | 'european' | 'private';
+  cost: 'free' | 'subsidised' | 'paid';
+  annualFee: number;
+  feeRange?: string;
+  curriculum: string;
   languages: string[];
+  ageRange: string;
   website: string;
+  note?: string;
 };
 
 export type Filters = {
@@ -87,6 +93,7 @@ export type Filters = {
   minArea: number;
   communes: string[];
   selectedSchoolIds: string[];
+  schoolCostFilter: 'all' | 'free' | 'subsidised' | 'paid';
   radius: number;
   garage: boolean;
   furnished: boolean;
@@ -103,6 +110,7 @@ export const DEFAULT_FILTERS: Filters = {
   minArea: 0,
   communes: [],
   selectedSchoolIds: [],
+  schoolCostFilter: 'all',
   radius: 2,
   garage: false,
   furnished: false,

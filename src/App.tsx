@@ -102,17 +102,46 @@ export default function App() {
     });
   }, [rawProperties, filters]);
 
+  const [schoolColorMap, setSchoolColorMap] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    setSchoolColorMap(prev => {
+      const next: Record<string, string> = {};
+      for (const id of filters.selectedSchoolIds) {
+        if (prev[id]) next[id] = prev[id];
+      }
+      for (const id of filters.selectedSchoolIds) {
+        if (!next[id]) {
+          const color = SCHOOL_COLORS.find(c => !Object.values(next).includes(c)) ?? SCHOOL_COLORS[0];
+          next[id] = color;
+        }
+      }
+      return next;
+    });
+  }, [filters.selectedSchoolIds]);
+
   const schoolCircles = useMemo(() => {
-    const selectedSchoolIds = filters.selectedSchoolIds || [];
-    if (selectedSchoolIds.length === 0) return [];
-    return selectedSchoolIds
-      .map((id, idx) => {
-        const school = SCHOOLS.find((s) => s.id === id);
+    if (!filters.selectedSchoolIds.length) return [];
+    return filters.selectedSchoolIds
+      .map(id => {
+        const school = SCHOOLS.find(s => s.id === id);
         if (!school) return null;
-        return { id, lat: school.lat, lng: school.lng, radius: filters.radius * 1000, name: school.name, color: SCHOOL_COLORS[idx % SCHOOL_COLORS.length] };
+        return {
+          id,
+          lat: school.lat,
+          lng: school.lng,
+          radius: filters.radius * 1000,
+          name: school.name,
+          shortName: school.shortName,
+          color: schoolColorMap[id] ?? '#3b82f6',
+          curriculum: school.curriculum,
+          feeRange: school.feeRange,
+          ageRange: school.ageRange,
+          website: school.website,
+        };
       })
       .filter((c): c is SchoolCircle => c !== null);
-  }, [filters.selectedSchoolIds, filters.radius]);
+  }, [filters.selectedSchoolIds, filters.radius, schoolColorMap]);
 
   const okSources = useMemo(() => sourcesStatus.filter(s => s.status === 'ok'), [sourcesStatus]);
   const totalSources = sourcesStatus.length;
@@ -191,6 +220,7 @@ export default function App() {
           rawProperties={rawProperties}
           sourcesStatus={sourcesStatus}
           onSearch={loadListings}
+          schoolColorMap={schoolColorMap}
         />
 
         {/* Main content */}

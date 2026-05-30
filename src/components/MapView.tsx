@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,13 +30,27 @@ function formatTooltipPrice(property: Property): string {
   return `${(total / 1000).toFixed(1)}k EUR/mo`;
 }
 
+function makeSchoolIcon(shortName: string, color: string): L.DivIcon {
+  return L.divIcon({
+    html: `<div style="background:white;border:2px solid ${color};border-radius:8px;padding:3px 8px;font-size:11px;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.15);white-space:nowrap;transform:translateX(-50%)">🎓 ${shortName}</div>`,
+    className: '',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
 export type SchoolCircle = {
   id: string;
   lat: number;
   lng: number;
   radius: number;
   name: string;
+  shortName: string;
   color: string;
+  curriculum: string;
+  feeRange: string | undefined;
+  ageRange: string;
+  website: string;
 };
 
 type MapViewProps = {
@@ -51,65 +64,90 @@ export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
     ? [primarySchool.lat, primarySchool.lng]
     : [49.611, 6.13];
 
-  const schoolIcon = useMemo(
-    () =>
-      L.divIcon({
-        html: `<div style="background:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(15,23,42,0.18);font-size:16px;line-height:1;">🎓</div>`,
-        className: '',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16],
-      }),
-    [],
-  );
-
   return (
-    <MapContainer center={center} zoom={12} className="h-full w-full">
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+    <div className="relative h-full w-full">
+      <MapContainer center={center} zoom={12} className="h-full w-full">
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
 
-      {/* School radius circles + markers (one per selected school, each with its own color) */}
-      {schoolCircles.flatMap((circle) => [
-        <Circle
-          key={`circle-${circle.id}`}
-          center={[circle.lat, circle.lng]}
-          radius={circle.radius}
-          pathOptions={{
-            color: circle.color,
-            fillColor: circle.color,
-            fillOpacity: 0.06,
-            dashArray: '8 4',
-            weight: 2,
-          }}
-        />,
-        <Marker key={`marker-${circle.id}`} position={[circle.lat, circle.lng]} icon={schoolIcon}>
-          <Tooltip>{circle.name}</Tooltip>
-        </Marker>,
-      ])}
+        {/* School radius circles + markers (one per selected school) */}
+        {schoolCircles.flatMap((circle) => {
+          const icon = makeSchoolIcon(circle.shortName, circle.color);
+          return [
+            <Circle
+              key={`circle-${circle.id}`}
+              center={[circle.lat, circle.lng]}
+              radius={circle.radius}
+              pathOptions={{
+                color: circle.color,
+                fillColor: circle.color,
+                fillOpacity: 0.06,
+                dashArray: '8 4',
+                weight: 2,
+              }}
+            />,
+            <Marker key={`marker-${circle.id}`} position={[circle.lat, circle.lng]} icon={icon}>
+              <Tooltip>
+                <div style={{ fontSize: 12, minWidth: 160, lineHeight: 1.6 }}>
+                  <div style={{ fontWeight: 600, marginBottom: 2 }}>{circle.name}</div>
+                  {circle.curriculum && <div>Curriculum: {circle.curriculum}</div>}
+                  {circle.feeRange && <div>Cost: {circle.feeRange}</div>}
+                  {circle.ageRange && <div>Ages: {circle.ageRange}</div>}
+                  {circle.website && (
+                    <a
+                      href={circle.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{ color: '#3b82f6', textDecoration: 'underline' }}
+                    >
+                      Visit website ↗
+                    </a>
+                  )}
+                </div>
+              </Tooltip>
+            </Marker>,
+          ];
+        })}
 
-      {/* Property markers */}
-      {properties.map((property) => {
-        const color = getMarkerColor(property);
-        return (
-          <CircleMarker
-            key={property.id}
-            center={[property.lat, property.lng]}
-            radius={18}
-            pathOptions={{
-              fillColor: color,
-              fillOpacity: 0.85,
-              color: 'white',
-              weight: 2,
-            }}
-          >
-            <Tooltip>{formatTooltipPrice(property)}</Tooltip>
-            <Popup maxWidth={300} minWidth={280}>
-              <PropertyCardPopup property={property} />
-            </Popup>
-          </CircleMarker>
-        );
-      })}
-    </MapContainer>
+        {/* Property markers */}
+        {properties.map((property) => {
+          const color = getMarkerColor(property);
+          return (
+            <CircleMarker
+              key={property.id}
+              center={[property.lat, property.lng]}
+              radius={18}
+              pathOptions={{
+                fillColor: color,
+                fillOpacity: 0.85,
+                color: 'white',
+                weight: 2,
+              }}
+            >
+              <Tooltip>{formatTooltipPrice(property)}</Tooltip>
+              <Popup maxWidth={300} minWidth={280}>
+                <PropertyCardPopup property={property} />
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+      </MapContainer>
+
+      {/* School legend */}
+      {schoolCircles.length > 0 && (
+        <div className="absolute bottom-4 left-4 z-[1000] bg-white border border-slate-200 rounded-xl shadow-sm px-3 py-2 space-y-1.5 pointer-events-none">
+          {schoolCircles.map((circle) => (
+            <div key={circle.id} className="flex items-center gap-2 text-xs text-slate-700">
+              <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: circle.color, flexShrink: 0 }} />
+              <span className="font-medium">{circle.shortName}</span>
+              <span className="text-slate-400">{(circle.radius / 1000).toFixed(1)} km</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
