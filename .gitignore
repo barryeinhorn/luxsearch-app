@@ -34,3 +34,5 @@ Thumbs.db
 
 # Claude Code session files
 .claude/settings.local.json
+
+.vercel
