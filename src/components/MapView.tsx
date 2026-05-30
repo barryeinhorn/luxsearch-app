@@ -32,9 +32,9 @@ function formatTooltipPrice(property: Property): string {
 
 function makeSchoolIcon(shortName: string, color: string): L.DivIcon {
   return L.divIcon({
-    html: `<div style="background:white;border:2px solid ${color};border-radius:8px;padding:3px 8px;font-size:11px;font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.15);white-space:nowrap;transform:translateX(-50%)">🎓 ${shortName}</div>`,
+    html: `<div style="background:white;border:2px solid ${color};border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.2);color:#1e293b;font-family:Inter,sans-serif;">🎓 ${shortName}</div>`,
     className: '',
-    iconSize: [0, 0],
+    iconSize: undefined,
     iconAnchor: [0, 0],
   });
 }
