@@ -102,6 +102,15 @@ export type Filters = {
   selectedSources: string[]; // empty = all
 };
 
+export type Agency = {
+  name: string;
+  address: string;
+  commune: string;
+  phone: string;
+  website: string;
+  editusUrl: string;
+};
+
 export const DEFAULT_FILTERS: Filters = {
   transaction: 'rent',
   propertyType: 'all',

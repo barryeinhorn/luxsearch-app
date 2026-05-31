@@ -4,6 +4,7 @@ import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
 import { MapView, type SchoolCircle } from './components/MapView';
 import { PropertyCard } from './components/PropertyCard';
 import { MarketInsights } from './components/MarketInsights';
+import { AgencyDirectory } from './components/AgencyDirectory';
 import { SCHOOLS } from './data/schools';
 import { API_URL } from './lib/api';
 import type { Filters, Property, SourceStatus } from './types';
@@ -42,6 +43,7 @@ function useLastRefreshed() {
 }
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<'search' | 'agencies'>('search');
   const [rawProperties, setRawProperties] = useState<Property[]>([]);
   const [sourcesStatus, setSourcesStatus] = useState<SourceStatus[]>([]);
   const [isMock, setIsMock] = useState(false);
@@ -254,6 +256,23 @@ export default function App() {
           <span className="text-xs text-slate-400 hidden sm:inline">Luxembourg</span>
         </div>
 
+        {/* Tab navigation */}
+        <div className="flex gap-1 ml-3 shrink-0">
+          {(['search', 'agencies'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${
+                activeTab === tab
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              {tab === 'search' ? 'Search' : 'Agencies'}
+            </button>
+          ))}
+        </div>
+
         <div className="flex-1 text-center hidden sm:block">
           <span className="text-sm text-slate-500">
             {loading ? 'Loading…' : `${filteredProperties.length} listings from ${okSources.length} of ${totalSources} sources`}
@@ -276,10 +295,20 @@ export default function App() {
         </div>
       </header>
 
-      {/* ── Below header: sidebar + main ── */}
+      {/* ── Below header: agencies tab or search ── */}
+      {activeTab === 'agencies' && (
+        <div className="flex-1 overflow-hidden">
+          <AgencyDirectory />
+        </div>
+      )}
+
       <div
         className="flex-1 flex overflow-hidden"
-        style={{ paddingRight: showInsights ? 400 : 0, transition: 'padding-right 0.3s ease' }}
+        style={{
+          display: activeTab === 'agencies' ? 'none' : undefined,
+          paddingRight: showInsights ? 400 : 0,
+          transition: 'padding-right 0.3s ease',
+        }}
       >
 
         <SearchPanel
@@ -290,6 +319,7 @@ export default function App() {
           sourcesStatus={sourcesStatus}
           onSearch={loadListings}
           schoolColorMap={schoolColorMap}
+          onBrowseAgencies={() => setActiveTab('agencies')}
         />
 
         {/* Main content */}

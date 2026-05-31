@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search, ChevronDown, X, ChevronRight, ExternalLink } from 'lucide-react';
+import { Search, ChevronDown, X, ChevronRight, Building2 } from 'lucide-react';
 import { SCHOOLS } from '../data/schools';
-import { SOURCE_META, CATEGORY_SOURCES, DIRECTORY_AGENCIES, type SourceCategory } from '../constants/sources';
+import { SOURCE_META, CATEGORY_SOURCES, type SourceCategory } from '../constants/sources';
 import type { Filters, Property, School, SourceStatus } from '../types';
 import { DEFAULT_FILTERS } from '../types';
 
@@ -92,10 +92,11 @@ type SearchPanelProps = {
   sourcesStatus: SourceStatus[];
   onSearch: () => void;
   schoolColorMap: Record<string, string>;
+  onBrowseAgencies?: () => void;
 };
 
 export function SearchPanel({
-  filters, onFiltersChange, properties, rawProperties, sourcesStatus, onSearch, schoolColorMap,
+  filters, onFiltersChange, properties, rawProperties, sourcesStatus, onSearch, schoolColorMap, onBrowseAgencies,
 }: SearchPanelProps) {
   const [communeOpen, setCommuneOpen] = useState(false);
   const [communeSearch, setCommuneSearch] = useState('');
@@ -529,24 +530,16 @@ export function SearchPanel({
               </div>
             </div>
 
-            {/* Directory links — geo-blocked / JS-rendered agencies */}
+            {/* Agency directory */}
             <div>
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Directory</p>
-              <div className="flex flex-wrap gap-1.5">
-                {DIRECTORY_AGENCIES.map(agency => (
-                  <a
-                    key={agency.id}
-                    href={agency.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 text-[10px] text-slate-500 hover:text-blue-600 border border-slate-200 rounded-full px-2 py-0.5 hover:border-blue-300 transition-colors"
-                    title={agency.description}
-                  >
-                    {agency.name}
-                    <ExternalLink size={8} className="shrink-0 opacity-60" />
-                  </a>
-                ))}
-              </div>
+              <button
+                onClick={() => { onBrowseAgencies?.(); }}
+                className="w-full flex items-center justify-between text-xs border border-slate-200 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50 hover:border-slate-400 transition-colors"
+              >
+                <span>Browse 1,680 agencies →</span>
+                <Building2 size={12} className="shrink-0 opacity-50" />
+              </button>
             </div>
           </div>
         )}

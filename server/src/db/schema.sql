@@ -57,10 +57,26 @@ create table if not exists market_data (
   updated_at timestamptz default now()
 );
 
+-- Agencies table: scraped from Editus, 7-day TTL cache
+create table if not exists agencies (
+  id serial primary key,
+  name text not null,
+  address text,
+  commune text,
+  phone text,
+  website text,
+  editus_url text,
+  scraped_at timestamptz default now()
+);
+
+create index if not exists idx_agencies_commune on agencies(commune);
+create index if not exists idx_agencies_scraped_at on agencies(scraped_at desc);
+
 -- Row Level Security: public read, server-side write via secret key
 alter table properties enable row level security;
 alter table geocode_cache enable row level security;
 alter table market_data enable row level security;
+alter table agencies enable row level security;
 
 create policy "Public read access" on properties
   for select using (true);
@@ -69,4 +85,7 @@ create policy "Public read access" on geocode_cache
   for select using (true);
 
 create policy "Public read access" on market_data
+  for select using (true);
+
+create policy "Public read access" on agencies
   for select using (true);
