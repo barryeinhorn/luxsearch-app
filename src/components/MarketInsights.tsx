@@ -150,10 +150,12 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
 
             {/* Footer */}
             <div className="text-xs text-slate-400 pb-2">
-              Sources: {data.sources.join(', ')} ·{' '}
-              <a href="https://www.athome.lu/" target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">
-                View market report →
-              </a>
+              Sources:{' '}
+              <a href="https://www.athome.lu/blog/en/real-estate-market/" target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">athome.lu</a>
+              {' · '}
+              <a href="https://www.immotop.lu/en/" target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">immotop.lu</a>
+              {' · '}
+              <a href="https://www.investropa.com/blogs/news/luxembourg-real-estate-market" target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">investropa.com</a>
             </div>
           </>
         ) : null}
