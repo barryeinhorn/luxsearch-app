@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, Polygon, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, Polygon } from 'react-leaflet';
 import { useRef, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -61,14 +61,12 @@ function MapFlyController({
   properties: Property[];
   markerRefs: { current: Record<string, L.CircleMarker> };
 }) {
-  const map = useMap();
   useEffect(() => {
     if (!selectedPropertyId) return;
     const prop = properties.find(p => p.id === selectedPropertyId);
     if (!prop || (prop.lat === 0 && prop.lng === 0)) return;
-    map.flyTo([prop.lat, prop.lng], 15, { duration: 0.8 });
-    setTimeout(() => { markerRefs.current[selectedPropertyId]?.openPopup(); }, 850);
-  }, [selectedPropertyId, map, properties, markerRefs]);
+    markerRefs.current[selectedPropertyId]?.openPopup();
+  }, [selectedPropertyId, properties, markerRefs]);
   return null;
 }
 
