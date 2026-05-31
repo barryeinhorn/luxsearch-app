@@ -150,6 +150,51 @@ app.get('/api/debug/all', async (_req, res) => {
   });
 });
 
+// Isochrone proxy — calls OpenRouteService and returns GeoJSON polygon
+app.get('/api/isochrone', async (req, res) => {
+  const lat = Number(req.query.lat);
+  const lng = Number(req.query.lng);
+  const km = Number(req.query.km);
+
+  if (!lat || !lng || !km) {
+    return res.status(400).json({ error: 'lat, lng, km required' });
+  }
+
+  const apiKey = process.env.ORS_API_KEY;
+  if (!apiKey) {
+    return res.status(503).json({ error: 'ORS_API_KEY not configured' });
+  }
+
+  try {
+    const orsRes = await fetch('https://api.openrouteservice.org/v2/isochrones/driving-car', {
+      method: 'POST',
+      headers: {
+        'Authorization': apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        locations: [[lng, lat]],
+        range: [km * 1000],
+        range_type: 'distance',
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!orsRes.ok) {
+      const text = await orsRes.text();
+      console.warn('[isochrone] ORS error', orsRes.status, text);
+      return res.status(orsRes.status).json({ error: text });
+    }
+
+    const data = await orsRes.json();
+    res.json(data);
+  } catch (err) {
+    console.warn('[isochrone] fetch failed', err);
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 // Clear geocode cache
 app.delete('/api/cache', async (_req, res) => {
   const { writeFileSync } = await import('fs');

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Home, RefreshCw } from 'lucide-react';
 import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
 import { MapView, type SchoolCircle } from './components/MapView';
@@ -8,6 +8,9 @@ import { SCHOOLS } from './data/schools';
 import { API_URL } from './lib/api';
 import type { Filters, Property, SourceStatus } from './types';
 import { DEFAULT_FILTERS } from './types';
+import { fetchIsochrone, cacheKey, type IsochroneFeature } from './lib/isochrone';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point as turfPoint } from '@turf/helpers';
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -47,6 +50,39 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { setLastRefreshed, elapsed } = useLastRefreshed();
+
+  // Isochrone polygons keyed by `${schoolId}:${radiusKm}`
+  const [isochroneMap, setIsochroneMap] = useState<Record<string, IsochroneFeature>>({});
+  const isochroneCache = useRef<Record<string, IsochroneFeature>>({});
+
+  useEffect(() => {
+    const schoolIds = filters.selectedSchoolIds;
+    const radiusKm = filters.radius;
+
+    if (schoolIds.length === 0) {
+      setIsochroneMap({});
+      return;
+    }
+
+    Promise.all(
+      schoolIds.map(async (schoolId) => {
+        const key = cacheKey(schoolId, radiusKm);
+        if (isochroneCache.current[key]) return;
+        const school = SCHOOLS.find(s => s.id === schoolId);
+        if (!school) return;
+        const feature = await fetchIsochrone(schoolId, school.lat, school.lng, radiusKm);
+        if (feature) isochroneCache.current[key] = feature;
+      }),
+    ).then(() => {
+      const next: Record<string, IsochroneFeature> = {};
+      for (const id of schoolIds) {
+        const key = cacheKey(id, radiusKm);
+        const f = isochroneCache.current[key];
+        if (f) next[key] = f;
+      }
+      setIsochroneMap(next);
+    });
+  }, [filters.selectedSchoolIds, filters.radius]);
 
   const doFetch = useCallback(async (currentFilters: Filters) => {
     setLoading(true);
@@ -98,7 +134,14 @@ export default function App() {
       if (filters.communes.length > 0 && !filters.communes.includes(p.commune)) return false;
       const selectedSchoolIds = filters.selectedSchoolIds || [];
       if (selectedSchoolIds.length > 0) {
+        const pt = turfPoint([p.lng, p.lat]);
         const isWithinAny = selectedSchoolIds.some((schoolId) => {
+          const iso = isochroneMap[cacheKey(schoolId, filters.radius)];
+          if (iso) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return booleanPointInPolygon(pt, iso as any);
+          }
+          // Fallback to straight-line while isochrone loads
           const school = SCHOOLS.find((s) => s.id === schoolId);
           if (!school) return false;
           return haversineKm(p.lat, p.lng, school.lat, school.lng) <= filters.radius;
@@ -112,7 +155,7 @@ export default function App() {
       if (filters.selectedSources.length > 0 && !filters.selectedSources.includes(p.source)) return false;
       return true;
     });
-  }, [rawProperties, filters]);
+  }, [rawProperties, filters, isochroneMap]);
 
   const [schoolColorMap, setSchoolColorMap] = useState<Record<string, string>>({});
 
@@ -302,7 +345,7 @@ export default function App() {
 
           {/* Map */}
           <div className="flex-1 min-h-0 relative">
-            <MapView properties={filteredProperties} schoolCircles={schoolCircles} />
+            <MapView properties={filteredProperties} schoolCircles={schoolCircles} isochroneMap={isochroneMap} />
             {error && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 px-6 text-center">
                 <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">

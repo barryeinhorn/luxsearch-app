@@ -1,8 +1,9 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { PropertyCardPopup } from './PropertyCard';
 import type { Property } from '../types';
+import type { IsochroneFeature } from '../lib/isochrone';
 
 // Fix Leaflet default icon URLs broken by bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -69,9 +70,10 @@ export type SchoolCircle = {
 type MapViewProps = {
   properties: Property[];
   schoolCircles?: SchoolCircle[];
+  isochroneMap?: Record<string, IsochroneFeature>;
 };
 
-export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
+export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: MapViewProps) {
   const primarySchool = schoolCircles[0];
   const center: [number, number] = primarySchool
     ? [primarySchool.lat, primarySchool.lng]
@@ -85,22 +87,33 @@ export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* School radius circles + markers (one per selected school) */}
+        {/* School isochrone/circle overlays + markers */}
         {schoolCircles.flatMap((circle) => {
           const icon = makeSchoolIcon(circle.shortName, circle.color);
+          const radiusKm = circle.radius / 1000;
+          const iso = isochroneMap[`${circle.id}:${radiusKm}`];
+          const shapeOptions = {
+            color: circle.color,
+            fillColor: circle.color,
+            fillOpacity: 0.06,
+            dashArray: '8 4' as string,
+            weight: 2,
+          };
           return [
-            <Circle
-              key={`circle-${circle.id}`}
-              center={[circle.lat, circle.lng]}
-              radius={circle.radius}
-              pathOptions={{
-                color: circle.color,
-                fillColor: circle.color,
-                fillOpacity: 0.06,
-                dashArray: '8 4',
-                weight: 2,
-              }}
-            />,
+            iso ? (
+              <GeoJSON
+                key={`iso-${circle.id}-${radiusKm}`}
+                data={iso as unknown as Parameters<typeof GeoJSON>[0]['data']}
+                style={shapeOptions}
+              />
+            ) : (
+              <Circle
+                key={`circle-${circle.id}`}
+                center={[circle.lat, circle.lng]}
+                radius={circle.radius}
+                pathOptions={shapeOptions}
+              />
+            ),
             <Marker key={`marker-${circle.id}`} position={[circle.lat, circle.lng]} icon={icon}>
               <Popup>
                 <div style={{ padding: '12px 14px', minWidth: 220, fontSize: 12, lineHeight: 1.6, color: '#0f172a' }}>
@@ -170,7 +183,7 @@ export function MapView({ properties, schoolCircles = [] }: MapViewProps) {
             <div key={circle.id} className="flex items-center gap-2 text-xs text-slate-700">
               <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: circle.color, flexShrink: 0 }} />
               <span className="font-medium">{circle.shortName}</span>
-              <span className="text-slate-400">{(circle.radius / 1000).toFixed(1)} km</span>
+              <span className="text-slate-400">{(circle.radius / 1000).toFixed(1)} km road</span>
             </div>
           ))}
         </div>

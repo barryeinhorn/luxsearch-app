@@ -410,8 +410,8 @@ export function SearchPanel({
       {selectedSchoolIds.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className={LABEL} style={{ marginBottom: 0 }}>Radius for all schools</p>
-            <span className="font-semibold text-slate-900 text-sm">{filters.radius.toFixed(1)} km</span>
+            <p className={LABEL} style={{ marginBottom: 0 }}>Road distance from schools</p>
+            <span className="font-semibold text-slate-900 text-sm">{filters.radius.toFixed(1)} km road</span>
           </div>
           <input type="range" min={0.5} max={10} step={0.5} value={filters.radius}
             onChange={(e) => set({ radius: Number(e.target.value) })}
