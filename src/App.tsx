@@ -233,11 +233,10 @@ export default function App() {
     const qs = immotopParams.toString();
 
     const txPath = filters.transaction === 'rent' ? 'rent' : 'buy';
-    const communeSlug = commune0 ?? 'luxembourg';
 
     const candidates: { id: string; label: string; url: string; alwaysShow?: boolean }[] = [
       { id: 'immotop',    label: 'Immotop',    url: qs ? `${immotopBase}?${qs}` : immotopBase, alwaysShow: true },
-      { id: 'properstar', label: 'Properstar', url: `https://www.properstar.com/luxembourg/${communeSlug}-loc/${txPath}/apartment-house/apartment` },
+      { id: 'properstar', label: 'Properstar', url: commune0 ? `https://www.properstar.com/luxembourg/${txPath}/apartment?location=${commune0}` : `https://www.properstar.com/luxembourg/${txPath}/apartment` },
       { id: 'athome',     label: 'atHome',     url: 'https://www.athome.lu' },
       { id: 'vivi',       label: 'Vivi',       url: commune0 ? `https://www.vivi.lu/en/${txPath}/apartment/${commune0}` : `https://www.vivi.lu/en/${txPath}/apartment/` },
     ];

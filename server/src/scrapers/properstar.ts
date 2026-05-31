@@ -6,10 +6,10 @@ const BASE_URL = 'https://www.properstar.com';
 
 function buildUrl(params: SearchParams): string {
   const tx = params.transaction === 'sale' ? 'buy' : 'rent';
-  const commune = params.communes.length > 0
-    ? params.communes[0].toLowerCase().replace(/\s+/g, '-') + '-loc'
-    : 'luxembourg-loc';
-  return `${BASE_URL}/luxembourg/${commune}/${tx}/apartment-house/apartment`;
+  const communeQ = params.communes.length > 0
+    ? `?location=${encodeURIComponent(params.communes[0].toLowerCase())}`
+    : '';
+  return `${BASE_URL}/luxembourg/${tx}/apartment${communeQ}`;
 }
 
 export async function scrapeProperstar(params: SearchParams): Promise<Property[]> {
