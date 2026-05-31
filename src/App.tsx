@@ -303,11 +303,7 @@ export default function App() {
 
       <div
         className="flex-1 flex overflow-hidden"
-        style={{
-          display: activeTab === 'agencies' ? 'none' : undefined,
-          paddingRight: showInsights ? 400 : 0,
-          transition: 'padding-right 0.3s ease',
-        }}
+        style={{ display: activeTab === 'agencies' ? 'none' : undefined }}
       >
 
         <SearchPanel
@@ -322,7 +318,10 @@ export default function App() {
         />
 
         {/* Main content */}
-        <main className="flex-1 flex flex-col overflow-hidden">
+        <main
+          className="flex-1 flex flex-col overflow-hidden"
+          style={{ marginRight: showInsights ? 400 : 0, transition: 'margin-right 0.3s ease' }}
+        >
 
           {/* isMock banner */}
           {isMock && (
@@ -423,7 +422,7 @@ export default function App() {
 
       {/* Market Insights slide-out */}
       <div
-        className={`fixed inset-y-0 right-0 z-40 w-full max-w-md bg-white border-l border-slate-200 shadow-2xl transform transition-transform duration-300 ${
+        className={`fixed inset-y-0 right-0 z-40 w-[400px] bg-white border-l border-slate-200 shadow-2xl transform transition-transform duration-300 ${
           showInsights ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
