@@ -1,4 +1,5 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, Polygon, useMap } from 'react-leaflet';
+import { useRef, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { PropertyCardPopup } from './PropertyCard';
@@ -51,6 +52,26 @@ function makeSchoolIcon(shortName: string, color: string): L.DivIcon {
   });
 }
 
+function MapFlyController({
+  selectedPropertyId,
+  properties,
+  markerRefs,
+}: {
+  selectedPropertyId: string | null;
+  properties: Property[];
+  markerRefs: { current: Record<string, L.CircleMarker> };
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!selectedPropertyId) return;
+    const prop = properties.find(p => p.id === selectedPropertyId);
+    if (!prop || (prop.lat === 0 && prop.lng === 0)) return;
+    map.flyTo([prop.lat, prop.lng], 15, { duration: 0.8 });
+    setTimeout(() => { markerRefs.current[selectedPropertyId]?.openPopup(); }, 850);
+  }, [selectedPropertyId, map, properties, markerRefs]);
+  return null;
+}
+
 export type SchoolCircle = {
   id: string;
   lat: number;
@@ -71,9 +92,11 @@ type MapViewProps = {
   properties: Property[];
   schoolCircles?: SchoolCircle[];
   isochroneMap?: Record<string, IsochroneFeature>;
+  selectedPropertyId?: string | null;
 };
 
-export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: MapViewProps) {
+export function MapView({ properties, schoolCircles = [], isochroneMap = {}, selectedPropertyId = null }: MapViewProps) {
+  const markerRefs = useRef<Record<string, L.CircleMarker>>({});
   const primarySchool = schoolCircles[0];
   const center: [number, number] = primarySchool
     ? [primarySchool.lat, primarySchool.lng]
@@ -86,6 +109,7 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <MapFlyController selectedPropertyId={selectedPropertyId} properties={properties} markerRefs={markerRefs} />
 
         {/* School isochrone/circle overlays + markers */}
         {schoolCircles.flatMap((circle) => {
@@ -105,6 +129,7 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
             fillOpacity: 0.06,
             dashArray: '8 4' as string,
             weight: 2,
+            interactive: false,
           };
           return [
             positions ? (
@@ -165,6 +190,8 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
           return (
             <CircleMarker
               key={property.id}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ref={(m: any) => { if (m) markerRefs.current[property.id] = m; else delete markerRefs.current[property.id]; }}
               center={[property.lat, property.lng]}
               radius={10}
               pathOptions={{

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Home, RefreshCw } from 'lucide-react';
 import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
 import { MapView, type SchoolCircle } from './components/MapView';
@@ -47,7 +47,9 @@ export default function App() {
   const [isMock, setIsMock] = useState(false);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [showInsights, setShowInsights] = useState(false);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const cardRefs = useRef<Record<string, HTMLDivElement>>({});
   const [error, setError] = useState<string | null>(null);
   const { setLastRefreshed, elapsed } = useLastRefreshed();
 
@@ -119,6 +121,11 @@ export default function App() {
     doFetch(DEFAULT_FILTERS);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!selectedPropertyId) return;
+    cardRefs.current[selectedPropertyId]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [selectedPropertyId]);
 
   const filteredProperties = useMemo(() => {
     return rawProperties.filter((p) => {
@@ -343,7 +350,7 @@ export default function App() {
 
           {/* Map */}
           <div className="flex-1 min-h-0 relative">
-            <MapView properties={filteredProperties} schoolCircles={schoolCircles} isochroneMap={isochroneMap} />
+            <MapView properties={filteredProperties} schoolCircles={schoolCircles} isochroneMap={isochroneMap} selectedPropertyId={selectedPropertyId} />
             {error && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80 px-6 text-center">
                 <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -355,14 +362,22 @@ export default function App() {
           </div>
 
           {/* Property card strip */}
-          <div className="shrink-0 border-t border-slate-100 bg-white" style={{ height: 220 }}>
+          <div className="shrink-0 border-t border-slate-100 bg-white" style={{ height: 240 }}>
             <div className="flex gap-3 px-3 py-3 h-full overflow-x-auto overflow-y-hidden">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="w-[200px] flex-shrink-0 rounded-xl border border-slate-100 bg-slate-50 animate-pulse" />
                 ))
               ) : filteredProperties.length > 0 ? (
-                filteredProperties.map((p) => <PropertyCard key={p.id} property={p} />)
+                filteredProperties.map((p) => (
+                  <PropertyCard
+                    key={p.id}
+                    property={p}
+                    selected={selectedPropertyId === p.id}
+                    onClick={() => setSelectedPropertyId(prev => prev === p.id ? null : p.id)}
+                    cardRef={(el) => { if (el) cardRefs.current[p.id] = el; else delete cardRefs.current[p.id]; }}
+                  />
+                ))
               ) : (
                 <div className="flex items-center text-sm text-slate-500 px-2">
                   No listings match your current filters.

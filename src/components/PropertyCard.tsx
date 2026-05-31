@@ -21,20 +21,36 @@ function getEnergyBadge(cls: string): string {
 }
 
 /** Compact card for the horizontal strip below the map */
-export function PropertyCard({ property }: { property: Property }) {
+export function PropertyCard({
+  property,
+  onClick,
+  selected,
+  cardRef,
+}: {
+  property: Property;
+  onClick?: () => void;
+  selected?: boolean;
+  cardRef?: (el: HTMLDivElement | null) => void;
+}) {
   const isSale = property.transaction === 'sale';
   const totalMonthly = property.totalMonthly ?? property.price + property.charges;
 
   return (
-    <div className="w-[200px] flex-shrink-0 rounded-xl border border-slate-100 shadow-sm bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow">
-      <div className="h-[100px] bg-slate-100 flex items-center justify-center overflow-hidden">
+    <div
+      ref={cardRef}
+      onClick={onClick}
+      className={`w-[200px] flex-shrink-0 rounded-xl border shadow-sm bg-white overflow-hidden cursor-pointer hover:shadow-md transition-shadow ${
+        selected ? 'ring-2 ring-blue-500 border-transparent' : 'border-slate-100'
+      }`}
+    >
+      <div className="h-[90px] bg-slate-100 flex items-center justify-center overflow-hidden">
         {property.images && property.images.length > 0 ? (
           <img src={property.images[0]} alt={property.title} className="w-full h-full object-cover" />
         ) : (
           <Building2 size={32} className="text-slate-300" />
         )}
       </div>
-      <div className="p-[10px]">
+      <div className="p-[8px]">
         <div className="flex gap-1 flex-wrap">
           <span className={`text-xs rounded-full px-2 py-0.5 ${getSourceBadgeClasses(property.source)}`}>
             {getSourceLabel(property.source)}
@@ -48,16 +64,27 @@ export function PropertyCard({ property }: { property: Property }) {
             </span>
           )}
         </div>
-        <p className="text-sm text-slate-500 mt-1">
+        <p className="text-xs text-slate-500 mt-1">
           {property.bedrooms}br · {property.area}m²
         </p>
-        <p className="font-bold text-slate-900 text-sm mt-1">
+        <p className="font-bold text-slate-900 text-sm mt-0.5">
           {isSale ? `€${property.price.toLocaleString()}` : `${totalMonthly.toLocaleString()} EUR/mo`}
         </p>
         {!isSale && property.charges > 0 && (
           <p className="text-xs text-slate-400">
-            ({property.price.toLocaleString()} + {property.charges} charges)
+            ({property.price.toLocaleString()} + {property.charges} ch.)
           </p>
+        )}
+        {property.sourceUrl && (
+          <a
+            href={property.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="mt-1.5 flex items-center justify-center w-full rounded-lg bg-slate-900 text-white text-xs font-medium py-1.5 hover:bg-slate-800 transition-colors"
+          >
+            View listing →
+          </a>
         )}
       </div>
     </div>
