@@ -49,11 +49,7 @@ export function AgencyDirectory() {
             <div>
               <h1 className="font-semibold text-slate-900">Agency Directory</h1>
               <p className="text-sm text-slate-500 mt-0.5">
-                {loading
-                  ? 'Loading…'
-                  : agencies.length > 0
-                    ? `${agencies.length} scraped · `
-                    : 'Browse '}
+                {loading ? 'Loading…' : agencies.length > 0 ? `${agencies.length} agencies · ` : ''}
                 <a
                   href={EDITUS_ALL_URL}
                   target="_blank"
@@ -101,10 +97,9 @@ export function AgencyDirectory() {
           ) : agencies.length === 0 ? (
             <div className="text-center py-20">
               <Building2 size={48} className="text-slate-200 mx-auto mb-4" />
-              <p className="text-slate-500 font-medium">No agencies scraped yet</p>
+              <p className="text-slate-500 font-medium">No agency data available</p>
               <p className="text-slate-400 text-sm mt-1 mb-6">
-                Editus requires a headless browser (Playwright) to scrape.
-                Data is cached for 7 days once fetched.
+                Could not load the agency directory. Browse all agencies directly on Editus.
               </p>
               <a
                 href={EDITUS_ALL_URL}

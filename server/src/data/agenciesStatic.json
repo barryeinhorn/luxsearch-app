@@ -1,0 +1,978 @@
+[
+  {
+    "name": "2M BAUWERK GmbH",
+    "address": "Denkmalstr. 6, D-54636",
+    "commune": "",
+    "phone": "+49 175 538 1593",
+    "website": "http://www.2m-bauwerk.de",
+    "editusUrl": ""
+  },
+  {
+    "name": "5ive Real Estate Developers",
+    "address": "6 rue Heine, L-1720, Luxembourg-Gare",
+    "commune": "Luxembourg",
+    "phone": "+35227869094",
+    "website": "http://www.5ive.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Accord Immobilière",
+    "address": "15, Place du Marché, L-4756, Pétange",
+    "commune": "Pétange",
+    "phone": "+352 26 58 01 75 1",
+    "website": "http://www.accord-immo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Active Invest Sàrl",
+    "address": "route de Burange, L-3429, Dudelange",
+    "commune": "Dudelange",
+    "phone": "+35227867975",
+    "website": "http://www.active-invest.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "active relocation luxembourg",
+    "address": "40, rue des Eglantiers, L-1457, Luxembourg-Neudorf",
+    "commune": "Luxembourg",
+    "phone": "+35227860713",
+    "website": "http://www.arluximmo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "AD Agence Immobiliere Sarl",
+    "address": "35, rue J-F Kennedy,  L-7327, Steinsel",
+    "commune": "Steinsel",
+    "phone": "+35227869627",
+    "website": "http://www.ad-Immobiliere.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Afil Luxembourg Sarl",
+    "address": "155, route d'Esch, L-1471, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+352 26 12 38 99",
+    "website": "https://bio.site/afilluxembourg",
+    "editusUrl": ""
+  },
+  {
+    "name": "Agence immobilière Hélène Grober",
+    "address": "192, route d'Esch, L-1471, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+35227867989",
+    "website": "http://www.immo-grober.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "AGENCE IMMOBILIERE MILLEBIERG",
+    "address": "6, rue de Windhof, L-8384, Koerich",
+    "commune": "Koerich",
+    "phone": "+35227869856",
+    "website": "http://www.aim.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "AGENCE IMMOBILIERE SYLVIE BECKER",
+    "address": "23, Am Becheler, L- 7213, Bereldange",
+    "commune": "Bereldange",
+    "phone": "+35227940876",
+    "website": "http://www.sylviebecker.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Agence Immobilière Toussaint Abby s.à.r.l",
+    "address": "23A, rue Nicolas Welter, L-7570, Mersch",
+    "commune": "Mersch",
+    "phone": "+35227869616",
+    "website": "http://www.confiance.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "AGENCE IMMOBILIERE WECKBECKER",
+    "address": "2, rue Albert 1er, L-1117, Luxembourg-Belair",
+    "commune": "Luxembourg",
+    "phone": "+35227860026",
+    "website": "http://www.weckbecker.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "ALISON IMMO SPRL",
+    "address": "8, rue de la Fraternité, B-6792, Aubange",
+    "commune": "Aubange",
+    "phone": "+32 63 221 200",
+    "website": "http://www.alisonimmo.be",
+    "editusUrl": ""
+  },
+  {
+    "name": "Amorim-Immobilière",
+    "address": "17, rue du Moulin, L-4251, Esch-sur-Alzette",
+    "commune": "Esch-sur-Alzette",
+    "phone": "+35227867974",
+    "website": "http://www.amorim-immobiliere.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Aprim Immobilier",
+    "address": "rue de l'ancien Hôpital, 57100, Thionville",
+    "commune": "Thionville",
+    "phone": "+33 3 82 53 44 32",
+    "website": "http://www.aprim-immobilier.com/",
+    "editusUrl": ""
+  },
+  {
+    "name": "B IMMOBILIER",
+    "address": "Diekirch - Luxembourg, Luxembourg-Merl",
+    "commune": "Luxembourg",
+    "phone": "+35227869457",
+    "website": "https://www.b-immobilier.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "BG Promotion SARL",
+    "address": "148, route d'Arlon, L-8010, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227869371",
+    "website": "http://www.bgpromotion.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "BGA - Bureau de gestion des avoirs",
+    "address": "13, rue Erasme, L-1468, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "Blueground Luxembourg Sàrl",
+    "address": "5, rue Guillaume J.Kroll, L-1882, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227869509",
+    "website": "http://www.theblueground.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "BNP Paribas Real Estate Luxembourg Advisory and Property Management",
+    "address": "Kronos Building - 10, rue Edward Steichen, L-2540, Luxembourg-Kirchberg",
+    "commune": "Luxembourg",
+    "phone": "+352 34 94 84 ",
+    "website": "http://www.realestate.bnpparibas.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Bon'Appart",
+    "address": "rue de Franchepré, 54240, Joeuf",
+    "commune": "Joeuf",
+    "phone": "+33 3 82 22 22 22",
+    "website": "http://www.bon-appart.fr",
+    "editusUrl": ""
+  },
+  {
+    "name": "BPI Real Estate Luxembourg",
+    "address": "8, rue du Château d'Eau, 3364, Leudelange",
+    "commune": "Leudelange",
+    "phone": "+35227868963",
+    "website": "http://www.bpi-realestate.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "BRICKS Solutions Immobilières",
+    "address": "2, place de Nancy, L- 2212, Luxembourg-Hollerich",
+    "commune": "Luxembourg",
+    "phone": "+35227869645",
+    "website": "http://www.bricks.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Bureau Immobilier Loewen Kill",
+    "address": "16, rue du Marché, L-8252, Mamer",
+    "commune": "Mamer",
+    "phone": "+35227860242",
+    "website": "http://www.loki.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Bureau Immobilier Stoffel Sàrl",
+    "address": "200, route de Longwy, L-1940, Luxembourg-Merl",
+    "commune": "Luxembourg",
+    "phone": "+35227860423",
+    "website": "http://www.immostoffel.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "CALTEUX SERGE IMMOBILIER",
+    "address": "17, rue des bains, L-1212, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227860367",
+    "website": "http://www.calteux.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Carine Deroo (CDR) Immobilier",
+    "address": "L-8028, Strassen",
+    "commune": "Strassen",
+    "phone": "+352 621 374 726 ",
+    "website": "http://www.deroo-immobilier.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Casa Pro Concept SARL",
+    "address": "469 route de Thionville, L5887, Alzingen",
+    "commune": "Alzingen",
+    "phone": "+352 691 717 597",
+    "website": "https://www.casaproconcept.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "CASTEL IMMOBILIER",
+    "address": "179, route d'Arlon, L-8011, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227869594",
+    "website": "http://www.castel.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "CBRE",
+    "address": "404, route d'Esch, L-1471, Luxembourg-Hollerich",
+    "commune": "Luxembourg",
+    "phone": "+35227869653",
+    "website": "http://www.cbre.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "CDCL Promotions Sàrl",
+    "address": "24, Rue Léon Laval, L-3372, Leudelange",
+    "commune": "Leudelange",
+    "phone": "+35227869484",
+    "website": "https://www.cdclux.com/",
+    "editusUrl": ""
+  },
+  {
+    "name": "CIMOLUX SARL",
+    "address": "rue Dicks, L-3831, Schifflange",
+    "commune": "Schifflange",
+    "phone": "+35227867979",
+    "website": "http://www.cimolux.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Colliers Luxembourg",
+    "address": "12, rue Jean Engling, L-1466, Luxembourg-Dommeldange",
+    "commune": "Luxembourg",
+    "phone": "+35227869012",
+    "website": "http://www.colliers.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "CREAHAUS S.A.",
+    "address": "224, route d'Arlon, L-8010, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227860132",
+    "website": "http://www.creahaus.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Déclic Immobilier",
+    "address": "54400, Longwy",
+    "commune": "Longwy",
+    "phone": "+33 3 82 26 29 08",
+    "website": "http://www.declicimmobilier.fr",
+    "editusUrl": ""
+  },
+  {
+    "name": "Delposen Lot-Am-D",
+    "address": "avenue de Douai, 57100, Thionville",
+    "commune": "Thionville",
+    "phone": "+33 3 82 53 08 00",
+    "website": "http://www.immodelposen.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "DRP GROUP",
+    "address": "17 route de Luxembourg, L-6182, Gonderange",
+    "commune": "Gonderange",
+    "phone": "+35227862969",
+    "website": "https://www.drp-group.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Duho Immobilier",
+    "address": "1 Place Marie-Louise, 57100, Thionville",
+    "commune": "Thionville",
+    "phone": "03 82 34 14 18",
+    "website": "https://www.lagencebyduho.fr/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Eagle Estates",
+    "address": "12 rue Charles Darwin, L-1433, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+35227869372",
+    "website": "http://www.eagleestates.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Eaglestone Luxembourg",
+    "address": "40 rue Goethe, L-1637, Luxembourg-Gare",
+    "commune": "Luxembourg",
+    "phone": "+352 621 13 07 32",
+    "website": "https://www.eaglestone.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "EFA Promotion Immobilière",
+    "address": "1, rue de Drusenheim, L-3884, Schifflange",
+    "commune": "Schifflange",
+    "phone": "+35227861358",
+    "website": "http://www.efapromo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Eifel-Haus Luxemburg S.A.",
+    "address": "10 avenue de la faiencerie, 1510, Luxembourg-Limpertsberg",
+    "commune": "Luxembourg",
+    "phone": "+35227869680",
+    "website": "http://www.eifel-haus.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "ELSA'HOME Sarl",
+    "address": "20, rue Xavier Brasseur, L-4040, Esch-sur-Alzette",
+    "commune": "Esch-sur-Alzette",
+    "phone": "+35227869683",
+    "website": "http://www.elsahome.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "ERA B LUX",
+    "address": "Chaussée du liège 76, B-6900, Marche-en-Famenne",
+    "commune": "Marche",
+    "phone": "+32 84 311 888",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "EUREKA REAL ESTATE",
+    "address": "26a, rue Albert 1er, L-1117, Luxembourg-Belair",
+    "commune": "Luxembourg",
+    "phone": "+35227868905",
+    "website": "http://www.eurekarealestate.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "FELIX GIORGETTI",
+    "address": "3, Rue Jean Piret, L-2350, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+35227860455",
+    "website": "http://www.gio.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "G et V Immobilière s.à.r.l.",
+    "address": "54, rue de la Gare, L-6440 , Echternach",
+    "commune": "Echternach",
+    "phone": "+35227869514",
+    "website": "http://www.gvimmo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "GL Promotion",
+    "address": "rue Clemenceau, 54640, Tucquegnieux",
+    "commune": "Tucquegnieux",
+    "phone": "+ 33 6 24 54 53 96",
+    "website": "http://www.appartement-glpromotion.com/",
+    "editusUrl": ""
+  },
+  {
+    "name": "GOLDEN IMMOBILIERE",
+    "address": "3, rue de la Résistance, L-4942, Bascharage",
+    "commune": "Bascharage",
+    "phone": "+352 661 184 789",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "GR IMMOTRUST",
+    "address": "1, Bd J-F Kennedy, L-4170, Esch-sur-Alzette",
+    "commune": "Esch-sur-Alzette",
+    "phone": "+35227869890",
+    "website": "http://www.grimmo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Groupe IRIS Immobilier S.A.",
+    "address": "Grand-rue, L-3926, Mondercange",
+    "commune": "Mondercange",
+    "phone": "+35227861357",
+    "website": "http://www.groupeiris.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Guillaume Bisdorff Sarl",
+    "address": "19, rue Eugène Ruppert, L-2453, Luxembourg-Cessange",
+    "commune": "Luxembourg",
+    "phone": "+35227869374",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "Guyot Immobilier",
+    "address": "Place du Marché, 57480, Sierck-les-Bains",
+    "commune": "Sierck",
+    "phone": "+33 3 82 83 85 58",
+    "website": "http://www.guyot-immobilier.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "HD33",
+    "address": "53 Boulevard Royal, L-2449, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227860055",
+    "website": "https://www.hd33.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "HEKTAR",
+    "address": "15 rue Evy Friedrich, L-1552, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+35227869518",
+    "website": "http://www.hektar.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Herby Immo Sàrl",
+    "address": "96, rue de Noertzange , L-3670, Kayl",
+    "commune": "Kayl",
+    "phone": "+35227869705",
+    "website": "http://www.herbyimmo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "HESTIA GROUP ",
+    "address": "4 rue Wieseck, L-8269, Mamer",
+    "commune": "Mamer",
+    "phone": "+35227869340",
+    "website": "https://coldwellbanker-hestiagroup.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "HOM'EXPERT",
+    "address": "Allée Lucien Schaefer, 57390, Audun-le-Tiche",
+    "commune": "Audun",
+    "phone": "+33 6 70 73 30 81",
+    "website": "http://www.homexperteurl.fr/",
+    "editusUrl": ""
+  },
+  {
+    "name": "HOME PROJECT S.A.",
+    "address": "33, rue Abbé Henri Muller, L-9065, Ettelbruck",
+    "commune": "Ettelbruck",
+    "phone": "+35227861657",
+    "website": "http://www.home-project.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Homechange",
+    "address": "11b rue d'tzig, L-5882, Hesperange",
+    "commune": "Hesperange",
+    "phone": "+352 661 789 005",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "HONESTY",
+    "address": "572 A, Route de Longwy, 6700, Arlon",
+    "commune": "Arlon",
+    "phone": "+32 63 22 34 49",
+    "website": "http://www.honesty.be",
+    "editusUrl": ""
+  },
+  {
+    "name": "ID-HOME Sàrl",
+    "address": "56, Duerfstrooss, L-9678, Nothum",
+    "commune": "Nothum",
+    "phone": "+35227868909",
+    "website": "http://www.id-home.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IDEMMO",
+    "address": "53 Boulevard Royal, L-2449, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227940611",
+    "website": "https://heritagebyjdl.conceptfactory.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMO EXCELLENCE",
+    "address": "Place du Marché, L-6460, Echternach",
+    "commune": "Echternach",
+    "phone": "+35227860660",
+    "website": "http://www.immoexcellence.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMO SCHMARTZ",
+    "address": "1B A Romescht, L-7364, Bofferdange",
+    "commune": "Bofferdange",
+    "phone": "+352 621 433 855",
+    "website": "https://www.immoschmartz.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immo SOOO Service",
+    "address": "85-97, Avenue de Luxembourg, L-4940, Bascharage",
+    "commune": "Bascharage",
+    "phone": "+352 691 30 30 91",
+    "website": "https://www.immo-sooo-service.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMO WOLZ",
+    "address": "Rés. Viviane - 55, rue Grande-Duchesse Charlotte, L-9515, Wiltz",
+    "commune": "Wiltz",
+    "phone": "+35227869895",
+    "website": "http://www.immowolz.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immobilière C.Jans",
+    "address": "490, route de Longwy , L-1940, Luxembourg-Merl",
+    "commune": "Luxembourg",
+    "phone": "+35227869661",
+    "website": "http://www.jans.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMOBILIERE DIEDERICH",
+    "address": "3, rue de Kleinbettingen, L-8436, Steinfort",
+    "commune": "Steinfort",
+    "phone": "+352 39 01 41 1",
+    "website": "http://www.immo-diederich.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immobilière Glesener S.à.r.l",
+    "address": "118, route d'Arlon, L-8008, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227869697",
+    "website": "http://www.immoglesener.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMOBILIERE LYDIA DE MARCO S.A.R.L.",
+    "address": "rue Léandre Lacroix, L-1913, Luxembourg-Limpertsberg",
+    "commune": "Luxembourg",
+    "phone": "+352 26 86 48 40",
+    "website": "http://www.lydiademarco.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immobilière MACEDO",
+    "address": "7, route de Boevange, L-7762, Bissen",
+    "commune": "Bissen",
+    "phone": "+35227869557",
+    "website": "http://www.immo-macedo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "immobilière Maréchal",
+    "address": "10, Zone Industrielle, L-8287, Kehlen",
+    "commune": "Kehlen",
+    "phone": "+35227860377",
+    "website": "http://www.marechal.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immobilière Spautz sàrl",
+    "address": "10, route de Luxembourg, L-6130, Junglinster",
+    "commune": "Junglinster",
+    "phone": "+35227869638",
+    "website": "http://www.immo-biewer.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Immohouse",
+    "address": "7 rue haute , L-1718, Luxembourg-Hamm",
+    "commune": "Luxembourg",
+    "phone": "+35227867980",
+    "website": "http://www.immohouse.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMOHUB SARL",
+    "address": "125 A, rue d'Esch, L-4440, Soleuvre",
+    "commune": "Soleuvre",
+    "phone": "+35227869670",
+    "website": "http://www.immohub.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMOLOSCH s.àr.l.",
+    "address": "rue de Bettembourg, L-3333, Hellange",
+    "commune": "Hellange",
+    "phone": "+35227860023",
+    "website": "http://www.immolosch.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMONEUF",
+    "address": "rue des Bains   (Forum Royal), L-1212, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227860045",
+    "website": "http://www.immoneuf.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IMMOSOLUTIONS",
+    "address": "274, route de Thionville, L-5884, Howald",
+    "commune": "Howald",
+    "phone": "+35227869871",
+    "website": "http://www.immosolutions.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Inside Real Estate SARL",
+    "address": "18, Boulevard de Kockelscheuer, L-1821, Luxembourg-Gasperich - Cloche d'or",
+    "commune": "Luxembourg",
+    "phone": "+35227869336",
+    "website": "https://www.insiderealestate.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "IWG",
+    "address": "boulevard Royal, 2449, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+352 27 87 25 79",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "JONES LANG LASALLE",
+    "address": "Atrium Business Park, 37 rue du Puits Romain, L-8070, Bertrange",
+    "commune": "Bertrange",
+    "phone": "+352 46 45 40 ",
+    "website": "http://www.joneslanglasalle.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Jost Immo",
+    "address": "21, rue des Tondeurs, L-9570, Wiltz",
+    "commune": "Wiltz",
+    "phone": "+352 26 95 04 03",
+    "website": "http://www.jost-immo.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "Korrekt Immo",
+    "address": "51 Cité Bommelscheuer, L-4953, Bascharage",
+    "commune": "Bascharage",
+    "phone": "+35227867986",
+    "website": "https://www.korrekt.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "KUHN Construction",
+    "address": "Z.A. John L Mac Adam, L-1113, Luxembourg-Cents",
+    "commune": "Luxembourg",
+    "phone": "+35227860113",
+    "website": "http://www.kuhn.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "KVAADRAT Sàrl",
+    "address": "179, rue de Luxembourg,, L-7540, Rollingen",
+    "commune": "Rollingen",
+    "phone": "+35227860653",
+    "website": "http://www.kvaadrat.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Kwartier S.à r.l.",
+    "address": "25,rue Notre-Dame, L-2240, Luxembourg-Grund",
+    "commune": "Luxembourg",
+    "phone": "+35227860256",
+    "website": "http://www.kwartier.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "L'AGENCE Real Estate Bereldange",
+    "address": "Route de Luxembourg , L-7240, Bereldange",
+    "commune": "Bereldange",
+    "phone": "+35227869769",
+    "website": "http://www.are.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "L'ECO INVEST LUX S.A.",
+    "address": "6, rue d'Arlon, L-8399, Windhof",
+    "commune": "Windhof",
+    "phone": "+35227860834",
+    "website": "http://www.lecoinvest.com",
+    "editusUrl": ""
+  },
+  {
+    "name": "LA IMMO S.a.r.l.",
+    "address": "153-155 A, rue du Kiem, L-8030, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227869772",
+    "website": "https://www.la-immo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "LIVIN Real Estate",
+    "address": "30, avenue du X Septembre, L-2550, Luxembourg-Belair",
+    "commune": "Luxembourg",
+    "phone": "+35227867971",
+    "website": "http://www.livin.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Maisons Comebat - JFB Conseils",
+    "address": "1 rue Nicolas-Joseph CUGNOT, 57970, Basse-Ham",
+    "commune": "Basse",
+    "phone": "+33 6 63 71 07 07",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "Merbag Immobilier SA",
+    "address": "45 rue de Bouillon, L-1248, Luxembourg-Hollerich",
+    "commune": "Luxembourg",
+    "phone": "+35227868983",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "Mim Feitler Immobilière Sarl",
+    "address": "rue Marguerite de Brabant, L-1254, Luxembourg-Merl",
+    "commune": "Luxembourg",
+    "phone": "+35227869859",
+    "website": "http://www.agence-feitler.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Movilliat",
+    "address": "Rue de l'Industrie, L-8399, Windhof (Koerich)",
+    "commune": "Windhof (Koerich)",
+    "phone": "+35227869876",
+    "website": "http://www.movilliat.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "myestate",
+    "address": "rue du Nord, L-2229, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227869335",
+    "website": "http://www.myestate.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Open Immobilier",
+    "address": "Avenue Albert 1er, 57100, Thionville",
+    "commune": "Thionville",
+    "phone": "+33 3 82 54 73 57",
+    "website": "http://www.open57.fr",
+    "editusUrl": ""
+  },
+  {
+    "name": "ORPI Villerupt Immobilier 1980",
+    "address": "place Jeanne d\\'Arc, 54190, Villerupt",
+    "commune": "Villerupt",
+    "phone": "+33 3 82 89 16 56",
+    "website": "https://orpi.com/villeruptimmobilier1980/",
+    "editusUrl": ""
+  },
+  {
+    "name": "PANERE Group GP Sarl",
+    "address": "23, rue Charles Arendt, L-1134, Luxembourg-Belair",
+    "commune": "Luxembourg",
+    "phone": "+352 691 797 808",
+    "website": "https://panere.eu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "PASSION-IMMO s.à.r.l.",
+    "address": "47A, rue de Sanem, 4382, Ehlerange",
+    "commune": "Ehlerange",
+    "phone": "+352 661 266 715",
+    "website": "https://www.passion-immo.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Perquin Immobilier",
+    "address": "Avenue Albert 1er, 57100, Thionville",
+    "commune": "Thionville",
+    "phone": "+33 3 82 34 91 97",
+    "website": "http://www.perquin.fr/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Power Point Real Estate",
+    "address": "13 Rue Principale, L-3770, Tetange",
+    "commune": "Tetange",
+    "phone": "+352 26 10 89 43 ",
+    "website": "https://www.powerpointrealestate.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "PREFALUX Home",
+    "address": "18 Rue de la Gare, L-6117, Junglinster",
+    "commune": "Junglinster",
+    "phone": "+35227869030",
+    "website": "http://www.prefalux-home.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "PROGETRA LUXEMBOURG SA",
+    "address": "14 route de Luxembourg, L-3253, Bettembourg",
+    "commune": "Bettembourg",
+    "phone": "+35227869365",
+    "website": "http://www.progetra.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "PROMOBE",
+    "address": "17, rue de la Poudrerie, L-3364, Leudelange",
+    "commune": "Leudelange",
+    "phone": "+35227862486",
+    "website": "https://www.promobe.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Property SA",
+    "address": "30, Boulevard Grande-Duchesse Charlotte, L-1330 , Luxembourg-Limpertsberg",
+    "commune": "Luxembourg",
+    "phone": "+35227860048",
+    "website": "http://www.property.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "PSS / PROMOTIONS SCHMIT-SCHMIT",
+    "address": "14, rue Michel Lentz, L-8085, Bertrange",
+    "commune": "Bertrange",
+    "phone": "+35227869934",
+    "website": "http://www.schmit-schmit.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "REAL G IMMO sarl",
+    "address": "10, rue 1900, L-2157, Luxembourg-Hollerich",
+    "commune": "Luxembourg",
+    "phone": "+35227861239",
+    "website": "https://www.realgimmo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Real Immo (Real Estate Advisors Luxembourg)",
+    "address": "4, rue Michel Rodange, L-2430, Luxembourg-Gare",
+    "commune": "Luxembourg",
+    "phone": "+35227942142",
+    "website": "https://www.real-immo.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "SARL HANEDAN",
+    "address": "4 Route de PEPPANGE, L-3270, Bettembourg",
+    "commune": "Bettembourg",
+    "phone": "06 82 41 60 49",
+    "website": "",
+    "editusUrl": ""
+  },
+  {
+    "name": "SM Promotion SA",
+    "address": "22, rue Principale, L-5240, Sandweiler",
+    "commune": "Sandweiler",
+    "phone": "+35227863970",
+    "website": "http://www.smpromotion.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Sparkasse Merzig Wadern Immobiliencenter",
+    "address": "Schankstrasse 7, 66663, Merzig",
+    "commune": "Merzig",
+    "phone": "",
+    "website": "http://www.spkmw.de",
+    "editusUrl": ""
+  },
+  {
+    "name": "Supereal S.A.",
+    "address": "55, rue de la Vallée, L-2661, Luxembourg-Hollerich",
+    "commune": "Luxembourg",
+    "phone": "+352 26 26 26 66",
+    "website": "http://www.supereal.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "THOMAS & PIRON (Luxembourg)",
+    "address": "2, rue Marie Curie, L-8049, Strassen",
+    "commune": "Strassen",
+    "phone": "+35227860194",
+    "website": "http://www.thomas-piron.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Tradition Immobilière Sà.r.l.",
+    "address": "route de Mondorf, L-5690, Ellange",
+    "commune": "Ellange",
+    "phone": "+35227860144",
+    "website": "http://www.tradimmo.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Ultimmo agence immobilière",
+    "address": "13, rue de la 7ème division d'infanterie Française, 6760, Ethe",
+    "commune": "Ethe",
+    "phone": "+32 63 411 405",
+    "website": "https://www.ultimmo.one",
+    "editusUrl": ""
+  },
+  {
+    "name": "UNICORN Sàrl",
+    "address": "18 rue du Marché aux Herbes, L-1728, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+352 26 54 17 17",
+    "website": "http://www.unicorn.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "VAN MAURITS",
+    "address": "25, rue des Capucins , L-1313, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227861676",
+    "website": "http://www.vanmaurits.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Venice Consulting S.A.",
+    "address": "265, route d'Arlon, L- 1150 , Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+35227868006",
+    "website": "http://www.venice-consulting.lu",
+    "editusUrl": ""
+  },
+  {
+    "name": "Von Schelling Real Estate Sàr",
+    "address": "50 Rue de Mühlenbach, L-2168, Luxembourg-Centre-ville",
+    "commune": "Luxembourg",
+    "phone": "+352 691 312 438",
+    "website": "https://www.vonschelling.com/",
+    "editusUrl": ""
+  },
+  {
+    "name": "WEOL Immobilière Sàrl",
+    "address": "34, Boulevard Charles Simonis, L-2539, Luxembourg-Cents",
+    "commune": "Luxembourg",
+    "phone": "+35227869447",
+    "website": "http://www.weol.lu/",
+    "editusUrl": ""
+  },
+  {
+    "name": "Wiesen-Piront Constructions SA",
+    "address": "88 rue de Luxembourg, L-8140, Bridel",
+    "commune": "Bridel",
+    "phone": "+35227860412",
+    "website": "http://www.wiesen-piront.lu",
+    "editusUrl": ""
+  }
+]

@@ -4,8 +4,8 @@ import cors from 'cors';
 import { fetchListings, runAllScrapers, SCRAPER_REGISTRY } from './scrapers/index.js';
 import { marketData } from './data/marketData.js';
 import { hashParams, getCachedProperties, cacheProperties } from './utils/cache.js';
-import { getCachedAgencies, cacheAgencies } from './utils/agencyCache.js';
-import { scrapeEditus } from './scrapers/editus.js';
+import { getCachedAgencies } from './utils/agencyCache.js';
+import agenciesStatic from './data/agenciesStatic.json';
 import type { SearchParams } from './types.js';
 
 
@@ -205,7 +205,7 @@ app.get('/api/isochrone', async (req, res) => {
   }
 });
 
-// Agency directory — scraped from Editus, cached 7 days in Supabase
+// Agency directory — Supabase cache (7-day TTL), falls back to bundled athome.lu data
 app.get('/api/agencies', async (_req, res) => {
   const cached = await getCachedAgencies();
   if (cached && cached.length > 0) {
@@ -213,14 +213,8 @@ app.get('/api/agencies', async (_req, res) => {
     return res.json({ agencies: cached, fromCache: true });
   }
 
-  console.log('[agencies] no cache — scraping Editus (requires Playwright)');
-  const agencies = await scrapeEditus();
-
-  if (agencies.length > 0) {
-    cacheAgencies(agencies).catch(err => console.warn('[agencies] cache write failed:', err));
-  }
-
-  res.json({ agencies, fromCache: false });
+  console.log(`[agencies] serving ${agenciesStatic.length} agencies from static bundle`);
+  res.json({ agencies: agenciesStatic, fromCache: false });
 });
 
 // Clear geocode cache

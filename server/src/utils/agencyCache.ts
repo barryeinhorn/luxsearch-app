@@ -1,9 +1,16 @@
 import { supabase } from '../lib/supabase.js';
-import type { ScrapedAgency } from '../scrapers/editus.js';
 
 const TTL_DAYS = 7;
 
-export type Agency = ScrapedAgency & { scrapedAt: string };
+export type Agency = {
+  name: string;
+  address: string;
+  commune: string;
+  phone: string;
+  website: string;
+  editusUrl: string;
+  scrapedAt?: string;
+};
 
 export async function getCachedAgencies(): Promise<Agency[] | null> {
   if (!supabase) return null;
@@ -29,10 +36,9 @@ export async function getCachedAgencies(): Promise<Agency[] | null> {
   }));
 }
 
-export async function cacheAgencies(agencies: ScrapedAgency[]): Promise<void> {
+export async function cacheAgencies(agencies: Agency[]): Promise<void> {
   if (!supabase || agencies.length === 0) return;
 
-  // Full refresh: clear existing rows then re-insert
   const { error: delErr } = await supabase.from('agencies').delete().gte('id', 1);
   if (delErr) console.warn('[agencies] delete error:', delErr.message);
 
