@@ -127,6 +127,10 @@ export default function App() {
     cardRefs.current[selectedPropertyId]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, [selectedPropertyId]);
 
+  // Clear card selection when filters change or new results arrive
+  useEffect(() => { setSelectedPropertyId(null); }, [filters]);
+  useEffect(() => { setSelectedPropertyId(null); }, [rawProperties]);
+
   const filteredProperties = useMemo(() => {
     return rawProperties.filter((p) => {
       if (p.transaction && p.transaction !== filters.transaction) return false;
