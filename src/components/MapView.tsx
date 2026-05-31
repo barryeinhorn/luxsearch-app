@@ -1,9 +1,9 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, Popup, Circle, Marker, Polygon } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { PropertyCardPopup } from './PropertyCard';
 import type { Property } from '../types';
-import type { IsochroneFeature } from '../lib/isochrone';
+import { toLeafletPositions, type IsochroneFeature } from '../lib/isochrone';
 
 // Fix Leaflet default icon URLs broken by bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -92,6 +92,7 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
           const icon = makeSchoolIcon(circle.shortName, circle.color);
           const radiusKm = circle.radius / 1000;
           const iso = isochroneMap[`${circle.id}:${radiusKm}`];
+          const positions = iso ? toLeafletPositions(iso) : null;
           const shapeOptions = {
             color: circle.color,
             fillColor: circle.color,
@@ -100,11 +101,11 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
             weight: 2,
           };
           return [
-            iso ? (
-              <GeoJSON
+            positions ? (
+              <Polygon
                 key={`iso-${circle.id}-${radiusKm}`}
-                data={iso as unknown as Parameters<typeof GeoJSON>[0]['data']}
-                style={shapeOptions}
+                positions={positions}
+                pathOptions={shapeOptions}
               />
             ) : (
               <Circle
@@ -179,13 +180,19 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
       {/* School legend */}
       {schoolCircles.length > 0 && (
         <div className="absolute bottom-4 left-4 z-[1000] bg-white border border-slate-200 rounded-xl shadow-sm px-3 py-2 space-y-1.5 pointer-events-none">
-          {schoolCircles.map((circle) => (
-            <div key={circle.id} className="flex items-center gap-2 text-xs text-slate-700">
-              <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: circle.color, flexShrink: 0 }} />
-              <span className="font-medium">{circle.shortName}</span>
-              <span className="text-slate-400">{(circle.radius / 1000).toFixed(1)} km road</span>
-            </div>
-          ))}
+          {schoolCircles.map((circle) => {
+            const radiusKm = circle.radius / 1000;
+            const loaded = !!isochroneMap[`${circle.id}:${radiusKm}`];
+            return (
+              <div key={circle.id} className="flex items-center gap-2 text-xs text-slate-700">
+                <div style={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: circle.color, flexShrink: 0 }} />
+                <span className="font-medium">{circle.shortName}</span>
+                <span className="text-slate-400">
+                  {radiusKm.toFixed(1)} km road {loaded ? '✓' : '…'}
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

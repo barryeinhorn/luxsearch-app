@@ -80,6 +80,7 @@ export default function App() {
         const f = isochroneCache.current[key];
         if (f) next[key] = f;
       }
+      console.log('[isochrone] map keys:', Object.keys(next));
       setIsochroneMap(next);
     });
   }, [filters.selectedSchoolIds, filters.radius]);

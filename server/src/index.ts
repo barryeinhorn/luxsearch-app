@@ -161,9 +161,14 @@ app.get('/api/isochrone', async (req, res) => {
   }
 
   const apiKey = process.env.ORS_API_KEY;
+  console.log(`[isochrone] lat=${lat} lng=${lng} km=${km} key=${apiKey ? `set(${apiKey.length}chars)` : 'MISSING'}`);
+
   if (!apiKey) {
     return res.status(503).json({ error: 'ORS_API_KEY not configured' });
   }
+
+  const body = { locations: [[lng, lat]], range: [km * 1000], range_type: 'distance' };
+  console.log(`[isochrone] POST https://api.openrouteservice.org/v2/isochrones/driving-car`, JSON.stringify(body));
 
   try {
     const orsRes = await fetch('https://api.openrouteservice.org/v2/isochrones/driving-car', {
@@ -171,26 +176,29 @@ app.get('/api/isochrone', async (req, res) => {
       headers: {
         'Authorization': apiKey,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
+        'Accept': 'application/json, application/geo+json',
       },
-      body: JSON.stringify({
-        locations: [[lng, lat]],
-        range: [km * 1000],
-        range_type: 'distance',
-      }),
-      signal: AbortSignal.timeout(10000),
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
     });
 
+    const text = await orsRes.text();
+    console.log(`[isochrone] ORS status=${orsRes.status} body=${text.slice(0, 300)}`);
+
     if (!orsRes.ok) {
-      const text = await orsRes.text();
-      console.warn('[isochrone] ORS error', orsRes.status, text);
       return res.status(orsRes.status).json({ error: text });
     }
 
-    const data = await orsRes.json();
+    let data: unknown;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      return res.status(502).json({ error: 'ORS non-JSON response', raw: text.slice(0, 200) });
+    }
+
     res.json(data);
   } catch (err) {
-    console.warn('[isochrone] fetch failed', err);
+    console.warn('[isochrone] request failed:', err);
     res.status(500).json({ error: String(err) });
   }
 });
