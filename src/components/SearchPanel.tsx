@@ -371,7 +371,7 @@ export function SearchPanel({
             <ChevronDown size={14} className="text-slate-400 shrink-0 ml-2" />
           </button>
           {schoolOpen && (
-            <div className="absolute z-50 top-full left-0 min-w-[340px] mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-y-auto max-h-72">
+            <div className="absolute z-50 top-full left-0 min-w-[360px] mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-y-auto max-h-[500px]">
               {schoolsForDropdown.map((school) => {
                 const isSelected = selectedSchoolIds.includes(school.id);
                 const color = schoolColorMap[school.id];
@@ -391,14 +391,19 @@ export function SearchPanel({
                     {isSelected && color
                       ? <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
                       : <div className="w-2 h-2 shrink-0" />}
-                    <span className="font-medium text-sm text-slate-900 flex-1">{school.shortName}</span>
+                    <span className="font-medium text-xs text-slate-900 flex-1 truncate">{school.shortName}</span>
                     <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${getCostBadgeClass(school.cost)}`}>
                       {getCostLabel(school.cost)}
                     </span>
                     <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${getSchoolTypeBadge(school.type)}`}>
                       {getSchoolTypeLabel(school.type)}
                     </span>
-                    <span className="text-xs text-slate-400 shrink-0">{school.commune}</span>
+                    <span
+                      className="text-xs text-slate-400 shrink-0 max-w-[90px] truncate"
+                      title={school.commune}
+                    >
+                      {school.commune}
+                    </span>
                   </label>
                 );
               })}
