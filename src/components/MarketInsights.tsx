@@ -5,10 +5,14 @@ import { API_URL } from '../lib/api';
 import type { MarketSnapshot } from '../types';
 
 const FB_GROUPS = [
-  { name: 'Expats in Luxembourg — Housing', url: 'https://www.facebook.com/groups/expatsinluxembourghousing' },
   { name: 'Luxembourg Expats — Apartments & Houses', url: 'https://www.facebook.com/groups/luxembourgexpathousing' },
-  { name: 'Logement Luxembourg', url: 'https://www.facebook.com/groups/logementluxembourg' },
-  { name: 'Flatmates Luxembourg', url: 'https://www.facebook.com/groups/flatmatesluxembourg' },
+  { name: 'Expats in Luxembourg', url: 'https://www.facebook.com/groups/expats.in.luxembourg' },
+  { name: 'Luxembourg Housing & Rentals', url: 'https://www.facebook.com/groups/luxembourghousing' },
+];
+
+const ALT_LINKS = [
+  { name: 'Anibis Luxembourg (classifieds)', url: 'https://www.anibis.lu/fr/immobilier-location' },
+  { name: 'Lux-Wort Immobilier', url: 'https://immo.wort.lu/fr/location' },
 ];
 
 type MarketInsightsProps = {
@@ -149,13 +153,13 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
           </>
         ) : null}
 
-        {/* Facebook groups */}
+        {/* Community listings */}
         <div className="pt-2 border-t border-slate-100">
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
-            Community listings (Facebook)
+            Community listings
           </p>
           <p className="text-xs text-slate-500 mb-3">
-            These groups have listings not found on agency sites. Check manually for best results.
+            These groups and sites have listings not found on agency portals.
           </p>
           <div className="space-y-2">
             {FB_GROUPS.map(group => (
@@ -170,7 +174,22 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
                 <ExternalLink size={12} className="shrink-0 opacity-40 group-hover:opacity-100 transition-opacity" />
               </a>
             ))}
+            {ALT_LINKS.map(link => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-between gap-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 hover:border-slate-400 hover:text-slate-900 transition-colors group"
+              >
+                <span>{link.name}</span>
+                <ExternalLink size={12} className="shrink-0 opacity-40 group-hover:opacity-100 transition-opacity" />
+              </a>
+            ))}
           </div>
+          <p className="text-xs text-slate-400 mt-3">
+            Facebook groups require a Facebook account and group membership to view listings.
+          </p>
         </div>
       </div>
     </div>
