@@ -3,20 +3,13 @@ import { API_URL } from './api';
 export type IsochroneFeature = {
   type: 'Feature';
   geometry: {
-    type: 'Polygon' | 'MultiPolygon';
-    coordinates: number[][][] | number[][][][];
+    type: string;
+    coordinates: number[][][];
   };
   properties: Record<string, unknown>;
 };
 
-// Extracts the outer ring as Leaflet [lat, lng] pairs from a Polygon feature
-export function toLeafletPositions(feature: IsochroneFeature): [number, number][] | null {
-  if (feature.geometry.type !== 'Polygon') return null;
-  const ring = (feature.geometry.coordinates as number[][][])[0];
-  if (!ring) return null;
-  return ring.map(([lng, lat]): [number, number] => [lat, lng]);
-}
-
+// Module-level cache — survives re-renders, deduplicates fetches
 const cache: Record<string, IsochroneFeature> = {};
 
 export async function fetchIsochrone(
@@ -36,24 +29,24 @@ export async function fetchIsochrone(
 
   try {
     const res = await fetch(url);
-    console.log(`[isochrone] response status=${res.status} for ${key}`);
+    console.log(`[isochrone] status=${res.status} key=${key}`);
 
     if (!res.ok) {
       const text = await res.text();
-      console.error(`[isochrone] server error ${res.status}:`, text.slice(0, 300));
+      console.error(`[isochrone] error ${res.status}:`, text.slice(0, 300));
       return null;
     }
 
     const data = await res.json() as { features?: IsochroneFeature[] };
-    const featureCount = data.features?.length ?? 0;
-    console.log(`[isochrone] got ${featureCount} feature(s) for ${key}`);
+    console.log(`[isochrone] features=${data.features?.length ?? 0}`);
 
     const feature = data.features?.[0] ?? null;
     if (feature) {
       cache[key] = feature;
-      console.log(`[isochrone] stored polygon with ${(feature.geometry.coordinates as number[][][])[0]?.length ?? '?'} points`);
+      const ring = feature.geometry?.coordinates?.[0];
+      console.log(`[isochrone] stored key=${key} points=${ring?.length ?? '?'} first=${JSON.stringify(ring?.[0])}`);
     } else {
-      console.warn(`[isochrone] no features in response:`, JSON.stringify(data).slice(0, 200));
+      console.warn('[isochrone] no features in response:', JSON.stringify(data).slice(0, 300));
     }
     return feature;
   } catch (err) {

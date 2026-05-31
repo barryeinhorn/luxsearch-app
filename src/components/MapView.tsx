@@ -3,7 +3,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { PropertyCardPopup } from './PropertyCard';
 import type { Property } from '../types';
-import { toLeafletPositions, type IsochroneFeature } from '../lib/isochrone';
+import type { IsochroneFeature } from '../lib/isochrone';
 
 // Fix Leaflet default icon URLs broken by bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -92,7 +92,13 @@ export function MapView({ properties, schoolCircles = [], isochroneMap = {} }: M
           const icon = makeSchoolIcon(circle.shortName, circle.color);
           const radiusKm = circle.radius / 1000;
           const iso = isochroneMap[`${circle.id}:${radiusKm}`];
-          const positions = iso ? toLeafletPositions(iso) : null;
+          let positions: [number, number][] | null = null;
+          if (iso) {
+            // ORS returns [lng, lat]; Leaflet Polygon needs [lat, lng]
+            const coords = iso.geometry.coordinates[0] as [number, number][];
+            positions = coords.map(([lng, lat]) => [lat, lng] as [number, number]);
+            console.log(`[mapview] ${circle.shortName} polygon: ${positions.length} pts, first=${JSON.stringify(positions[0])}`);
+          }
           const shapeOptions = {
             color: circle.color,
             fillColor: circle.color,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ExternalLink, Home, RefreshCw } from 'lucide-react';
 import { SearchPanel, SCHOOL_COLORS } from './components/SearchPanel';
 import { MapView, type SchoolCircle } from './components/MapView';
@@ -53,7 +53,6 @@ export default function App() {
 
   // Isochrone polygons keyed by `${schoolId}:${radiusKm}`
   const [isochroneMap, setIsochroneMap] = useState<Record<string, IsochroneFeature>>({});
-  const isochroneCache = useRef<Record<string, IsochroneFeature>>({});
 
   useEffect(() => {
     const schoolIds = filters.selectedSchoolIds;
@@ -64,23 +63,21 @@ export default function App() {
       return;
     }
 
+    console.log(`[isochrone] effect: schools=${schoolIds.join(',')} radius=${radiusKm}`);
+
     Promise.all(
       schoolIds.map(async (schoolId) => {
-        const key = cacheKey(schoolId, radiusKm);
-        if (isochroneCache.current[key]) return;
         const school = SCHOOLS.find(s => s.id === schoolId);
-        if (!school) return;
+        if (!school) return null;
         const feature = await fetchIsochrone(schoolId, school.lat, school.lng, radiusKm);
-        if (feature) isochroneCache.current[key] = feature;
+        return feature ? { key: cacheKey(schoolId, radiusKm), feature } : null;
       }),
-    ).then(() => {
+    ).then((results) => {
       const next: Record<string, IsochroneFeature> = {};
-      for (const id of schoolIds) {
-        const key = cacheKey(id, radiusKm);
-        const f = isochroneCache.current[key];
-        if (f) next[key] = f;
+      for (const r of results) {
+        if (r) next[r.key] = r.feature;
       }
-      console.log('[isochrone] map keys:', Object.keys(next));
+      console.log('[isochrone] setIsochroneMap keys:', Object.keys(next));
       setIsochroneMap(next);
     });
   }, [filters.selectedSchoolIds, filters.radius]);
