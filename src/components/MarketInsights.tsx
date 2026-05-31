@@ -5,14 +5,13 @@ import { API_URL } from '../lib/api';
 import type { MarketSnapshot } from '../types';
 
 const FB_GROUPS = [
+  { name: 'Luxembourg Expats', url: 'https://www.facebook.com/groups/luxembourgexpats' },
   { name: 'Luxembourg Expats — Apartments & Houses', url: 'https://www.facebook.com/groups/luxembourgexpathousing' },
-  { name: 'Expats in Luxembourg', url: 'https://www.facebook.com/groups/expats.in.luxembourg' },
-  { name: 'Luxembourg Housing & Rentals', url: 'https://www.facebook.com/groups/luxembourghousing' },
+  { name: 'Apartments Luxembourg', url: 'https://www.facebook.com/groups/apartments.luxembourg' },
 ];
 
 const ALT_LINKS = [
-  { name: 'Anibis Luxembourg (classifieds)', url: 'https://www.anibis.lu/fr/immobilier-location' },
-  { name: 'Lux-Wort Immobilier', url: 'https://immo.wort.lu/fr/location' },
+  { name: 'Wort Immo', url: 'https://www.wortimmo.lu/en' },
 ];
 
 type MarketInsightsProps = {
@@ -23,6 +22,7 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
   const [data, setData] = useState<MarketSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [bedrooms, setBedrooms] = useState<1 | 2 | 3>(3);
 
   useEffect(() => {
     async function loadData() {
@@ -112,9 +112,26 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
 
             {/* Horizontal bar chart */}
             <div>
-              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">
-                Average 3BR rent by commune
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                  Avg rent by commune
+                </p>
+                <div className="flex gap-1">
+                  {([1, 2, 3] as const).map(br => (
+                    <button
+                      key={br}
+                      onClick={() => setBedrooms(br)}
+                      className={`px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                        bedrooms === br
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                      }`}
+                    >
+                      {br}BR
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div style={{ height: 300 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart layout="vertical" data={sortedCommunes} margin={{ left: 0, right: 60, top: 0, bottom: 0 }}>
@@ -128,9 +145,9 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
                       axisLine={false}
                       tickLine={false}
                     />
-                    <Bar dataKey="avgRent3BR" fill="#3b82f6" radius={[0, 4, 4, 0]}>
+                    <Bar dataKey={`avgRent${bedrooms}BR`} fill="#3b82f6" radius={[0, 4, 4, 0]}>
                       <LabelList
-                        dataKey="avgRent3BR"
+                        dataKey={`avgRent${bedrooms}BR`}
                         position="right"
                         formatter={(v: number) => `€${v.toLocaleString()}`}
                         style={{ fontSize: 11, fill: '#475569' }}
@@ -139,6 +156,9 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+              <p className="text-xs text-slate-400 mt-2">
+                * Market data is estimated based on athome.lu and immotop.lu listings as of May 2026. Actual prices may vary.
+              </p>
             </div>
 
             {/* Footer */}
@@ -188,7 +208,7 @@ export function MarketInsights({ onClose }: MarketInsightsProps) {
             ))}
           </div>
           <p className="text-xs text-slate-400 mt-3">
-            Facebook groups require a Facebook account and group membership to view listings.
+            Facebook groups require membership to view listings.
           </p>
         </div>
       </div>
