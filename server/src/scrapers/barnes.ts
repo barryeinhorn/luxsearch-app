@@ -4,9 +4,6 @@ import { fetchHtml, generateId, makeProperty, parsePrice, extractCommune, extrac
 const SOURCE = 'barnes' as const;
 const BASE_URL = 'https://www.barnes-luxembourg.com';
 
-// BARNES uses different page layouts for rent vs sale
-// Rental: /fr/location.html — .homelengo-box cards (prices hidden / POA)
-// Sale:   /fr/vente.html   — .box-location cards (prices visible in h6.title)
 function buildUrl(params: SearchParams): string {
   return params.transaction === 'sale'
     ? `${BASE_URL}/fr/vente.html`
@@ -23,50 +20,78 @@ export async function scrapeBarnes(params: SearchParams): Promise<Property[]> {
     return [];
   }
 
+  // Both rent and sale pages now use homelengo-box cards
+  const cards = $('.homelengo-box').toArray();
+  console.log(`[${SOURCE}] found ${cards.length} .homelengo-box cards`);
+
+  if (cards.length === 0) {
+    const html = $.html();
+    console.log(`[${SOURCE}] HTML snippet (chars 3000-5500): ${html.slice(3000, 5500)}`);
+    return [];
+  }
+
   const results: Property[] = [];
 
-  if (params.transaction === 'sale') {
-    // Sale page: .box-location cards with visible prices in h6.title
-    const cards = $('.box-location').toArray();
-    console.log(`[${SOURCE}] found ${cards.length} .box-location cards`);
+  for (const card of cards.slice(0, 40)) {
+    const el = $(card);
 
-    for (const card of cards.slice(0, 30)) {
-      const el = $(card);
-      const href = el.find('a').first().attr('href') ?? '';
-      const sourceUrl = href.startsWith('http') ? href : href ? BASE_URL + href : undefined;
-      const title = el.find('span.sub-title, .sub-title').first().text().trim()
-        || el.find('img').first().attr('alt') || '';
-      const priceText = el.find('h6.title, .title').first().text().trim();
-      const price = parsePrice(priceText);
-      if (!price || price < 100) continue;
-      if (params.maxTotalPrice > 0 && price > params.maxTotalPrice) continue;
+    const anchor = el.find('.content-top h3 a.link').first();
+    const href = anchor.attr('href') ?? '';
+    const sourceUrl = href.startsWith('http') ? href : href ? BASE_URL + href : undefined;
+    const title = anchor.text().trim();
 
-      const image = el.find('img').first().attr('data-src') || el.find('img').first().attr('src') || '';
-      const bedroomMatch = title.match(/(\d+)\s*chambre/i);
-      const bedrooms = bedroomMatch ? parseInt(bedroomMatch[1]) : 0;
-      const areaMatch = title.match(/(\d+)\s*m[²2]/i);
-      const area = areaMatch ? parseInt(areaMatch[1]) : 0;
+    // Location label: "Luxembourg, Ville-Haute" / "Belair" etc.
+    const locationText = el.find('.archive-top .bottom').text().replace(/\s+/g, ' ').trim();
 
-      results.push(makeProperty(SOURCE, {
-        id: generateId(SOURCE, sourceUrl ?? title + price),
-        sourceUrl,
-        title: title || undefined,
-        transaction: 'sale',
-        price,
-        bedrooms,
-        area,
-        commune: extractCommune(title),
-        images: image ? [image] : [],
-        lat: 0,
-        lng: 0,
-        features: extractFeatures(title),
-      }));
+    // Price: "1 800 €" or "500 000 €" — strip / mois suffix automatically
+    const priceText = el.find('.content-bottom h5.price').first().text().trim();
+    const price = parsePrice(priceText);
+    if (!price || price < 100) continue;
+    if (params.maxTotalPrice > 0 && price > params.maxTotalPrice) continue;
+
+    // Bedrooms and area from meta-list spans
+    let bedrooms = 0;
+    let area = 0;
+    el.find('.meta-list .item span.price').each((_, span) => {
+      const text = $(span).text().trim();
+      const bedroomMatch = text.match(/(\d+)\s*chambre/i);
+      if (bedroomMatch) { bedrooms = parseInt(bedroomMatch[1]); return; }
+      const areaMatch = text.match(/^(\d+)\s*m[²2]?/i);
+      if (areaMatch) { area = parseInt(areaMatch[1]); }
+    });
+
+    // Fallback: bedroom count from title
+    if (bedrooms === 0) {
+      const bm = (title + ' ' + locationText).match(/(\d+)\s*chambre/i);
+      if (bm) bedrooms = parseInt(bm[1]);
     }
-  } else {
-    // Rent page: .homelengo-box cards — prices hidden (luxury / POA)
-    const cards = $('.homelengo-box').toArray();
-    console.log(`[${SOURCE}] found ${cards.length} .homelengo-box cards (prices not shown publicly)`);
-    // Barnes luxury rental prices are not visible without contacting them
+
+    if (params.minBedrooms > 0 && bedrooms < params.minBedrooms) continue;
+
+    // Image: lazyload uses data-src, fallback to src
+    const imgEl = el.find('.archive-top img').first();
+    const image = imgEl.attr('data-src') || imgEl.attr('src') || '';
+
+    const commune = extractCommune(locationText) !== 'Luxembourg'
+      ? extractCommune(locationText)
+      : extractCommune(title);
+
+    results.push(makeProperty(SOURCE, {
+      id: generateId(SOURCE, sourceUrl ?? title + price),
+      sourceUrl,
+      title: title || undefined,
+      transaction: params.transaction,
+      price,
+      charges: 0,
+      chargesKnown: false,
+      bedrooms,
+      area,
+      commune,
+      images: image ? [image] : [],
+      lat: 0,
+      lng: 0,
+      features: extractFeatures(title + ' ' + locationText),
+    }));
   }
 
   console.log(`[${SOURCE}] ${results.length} listings`);
