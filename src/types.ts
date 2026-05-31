@@ -59,11 +59,17 @@ export type CommuneData = {
 
 export type MarketSnapshot = {
   lastUpdated: string;
+  cityAvgRent1BR?: number;
+  cityAvgRent2BR?: number;
   cityAvgRent3BR: number;
   cityAvgSalePriceM2: number;
   totalActiveListings: number;
   sources: string[];
   communes: CommuneData[];
+  isLive?: boolean;
+  isEstimated?: boolean;
+  calculatedAt?: string;
+  sampleSize?: number;
 };
 
 export type School = {

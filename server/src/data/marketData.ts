@@ -9,6 +9,8 @@ export const marketData = {
     { commune: 'Bertrange',    avgRent1BR: 1850, avgRent2BR: 2400, avgRent3BR: 2800, avgSalePricePerM2: 7000, medianDaysOnMarket: 15, yoyChange: 1.7 },
     { commune: 'Gasperich',    avgRent1BR: 1900, avgRent2BR: 2400, avgRent3BR: 2800, avgSalePricePerM2: 7400, medianDaysOnMarket: 13, yoyChange: 2.8 },
   ],
+  cityAvgRent1BR: 2050,
+  cityAvgRent2BR: 2650,
   cityAvgRent3BR: 3100,
   cityAvgSalePriceM2: 8200,
   totalActiveListings: 0,

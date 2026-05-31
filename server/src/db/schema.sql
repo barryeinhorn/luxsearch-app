@@ -50,12 +50,17 @@ create table if not exists geocode_cache (
   cached_at timestamptz default now()
 );
 
--- Market data table (optional — for future use)
+-- Market data table — stores live calculated snapshot (single row, id=1)
 create table if not exists market_data (
   id serial primary key,
   data jsonb not null,
   updated_at timestamptz default now()
 );
+
+-- Run these if upgrading from the initial schema:
+-- alter table market_data add column if not exists calculated_from_live boolean default false;
+-- alter table market_data add column if not exists sample_size integer default 0;
+-- alter table market_data add column if not exists calculated_at timestamptz;
 
 -- Agencies table: scraped from Editus, 7-day TTL cache
 create table if not exists agencies (

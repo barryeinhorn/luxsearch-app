@@ -4,6 +4,7 @@ import cors from 'cors';
 import { fetchListings, runAllScrapers, SCRAPER_REGISTRY } from './scrapers/index.js';
 import { marketData } from './data/marketData.js';
 import { hashParams, getCachedProperties, cacheProperties } from './utils/cache.js';
+import { getCachedMarketData, refreshMarketData } from './utils/marketRefresh.js';
 import { getCachedAgencies } from './utils/agencyCache.js';
 import agenciesStatic from './data/agenciesStatic.json';
 import type { SearchParams } from './types.js';
@@ -25,8 +26,24 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', scrapers: SCRAPER_REGISTRY.length });
 });
 
-app.get('/api/market', (_req, res) => {
-  res.json(marketData);
+app.get('/api/market', async (_req, res) => {
+  const live = await getCachedMarketData();
+  if (live) {
+    console.log(`[market] Live cache hit: ${live.sampleSize} listings, ${live.calculatedAt}`);
+    return res.json(live);
+  }
+  console.log('[market] No live data — serving static fallback');
+  res.json({ ...marketData, isLive: false, isEstimated: true });
+});
+
+app.get('/api/market/refresh', async (_req, res) => {
+  try {
+    const snapshot = await refreshMarketData();
+    res.json(snapshot);
+  } catch (err) {
+    console.warn('[market/refresh] error:', err);
+    res.status(500).json({ error: String(err) });
+  }
 });
 
 app.get('/api/search', async (req, res) => {
@@ -229,4 +246,12 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
   console.log(`Scrapers registered: ${SCRAPER_REGISTRY.length}`);
+
+  setTimeout(async () => {
+    const market = await getCachedMarketData();
+    if (!market) {
+      console.log('[market] Data stale — refreshing in background');
+      refreshMarketData().catch(err => console.warn('[market] Background refresh failed:', err));
+    }
+  }, 5000);
 });
